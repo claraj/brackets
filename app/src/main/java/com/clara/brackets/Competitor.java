@@ -11,6 +11,10 @@ public class Competitor implements Parcelable {
 
 	String name;
 
+	public Competitor(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public String toString() {
 		return name;

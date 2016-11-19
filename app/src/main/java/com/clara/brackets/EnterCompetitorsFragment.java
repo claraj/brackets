@@ -19,7 +19,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link EnterCompetitorsFragment.OnFragmentInteractionListener} interface
+ * {@link EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link EnterCompetitorsFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -30,9 +30,8 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 	private Button mSaveNameButton, mSaveAllButton;
 	private EditText mNameET;
 	private ListView mListView;
+	private ArrayAdapter<Competitor> mAdapter;
 
-	private ArrayAdapter<Competitor> competitorAdapter;
-	
 	private ArrayList<Competitor> competitors;
 
 	// TODO: Rename parameter arguments, choose names that match
@@ -44,7 +43,7 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 	private String mCompetitors;
 	private String mParam2;
 
-	private OnFragmentInteractionListener mListener;
+	private OnEnterCompetitorFragmentInteractionListener mListener;
 
 	public EnterCompetitorsFragment() {
 		// Required empty public constructor
@@ -97,29 +96,21 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		mSaveAllButton.setOnClickListener(this);
 		mNameET = (EditText) view.findViewById(R.id.new_competitor_name_et);
 		mListView = (ListView) view.findViewById(R.id.current_competitors_list);
-		
-		
-		
-		
-		
+
+		mAdapter = new ArrayAdapter<Competitor>(this.getContext(), R.layout.enter_competitor_list_element, R.id.comp_name_list_tv, competitors);
+
+		mListView.setAdapter(mAdapter);
+
 		return view;
 
 	}
 
 
-
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri) {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
-		}
-	}
-
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-		if (context instanceof OnFragmentInteractionListener) {
-			mListener = (OnFragmentInteractionListener) context;
+		if (context instanceof OnEnterCompetitorFragmentInteractionListener) {
+			mListener = (OnEnterCompetitorFragmentInteractionListener) context;
 		} else {
 			throw new RuntimeException(context.toString()
 					+ " must implement OnFragmentInteractionListener");
@@ -139,11 +130,15 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 			case R.id.save_competitor_name_button: {
 				//save
 
+				String name = mNameET.getText().toString();
+				Competitor competitor = new Competitor(name);
+				competitors.add(competitor);
+				mAdapter.notifyDataSetChanged();
 				break;
 			}
 
 			case R.id.save_competitors_button: {
-
+				mListener.onCompetitorListCreated(competitors);
 				break;
 			}
 
@@ -162,8 +157,8 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
-	public interface OnFragmentInteractionListener {
+	public interface OnEnterCompetitorFragmentInteractionListener {
 		// TODO: Update argument type and name
-		void onFragmentInteraction(Uri uri);
+		void onCompetitorListCreated(ArrayList<Competitor> competitors);
 	}
 }

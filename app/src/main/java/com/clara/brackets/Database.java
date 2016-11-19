@@ -1,5 +1,13 @@
 package com.clara.brackets;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import java.util.ArrayList;
+
 /**
  * SQLite interaction.  Save competitor list, and current status of tournament
  *
@@ -7,27 +15,95 @@ package com.clara.brackets;
 
 public class Database {
 
+	private Context context;
+	private SQLHelper helper;
+	private SQLiteDatabase db;
+	private  static final String DB_NAME = "products.db";
+
+	private  static final int DB_VERSION = 3;
+
+
 	//Two tables: one for competitors
 	//one for results of a particular matchup
 
-	String COMPETITORS_TABLE = "competitors";
-	String COMP_ID = "_id";
-	String COMPETITOR_NAME = "name";
+	private final String COMPETITORS_TABLE = "competitors";
+	private final String COMP_ID = "_id";
+	private final String COMPETITOR_NAME = "name";
 
-	String createCompetitorsBase = "CREATE TABLE %s ( %s INT NOT NULL AUTOINCREMENT, %s UNIQUE VARCHAR(100) )";  //todo check SQL
-	String createCompetitorsSQL = String.format(createCompetitorsBase, COMPETITORS_TABLE, COMP_ID, COMPETITOR_NAME);
 
-	String RESULTS_TABLE = "results";
-	String RESULT_ID = "_id";
-	String COMP_1_NAME = "competitor_1";
-	String COMP_2_NAME = "competitor_2";
-	String WINNER = "winner";
-	String MATCH_DATE = "match_date";
-
-	String createResultsBase = "CREATE TABLE %s (%s INT NOT NULL AUTOINCREMENT, %s VARCHAR(100), %s INT, %s INT, %s INT, %s INT )";
-	String createResultsSQL = String.format(createResultsBase, RESULTS_TABLE, RESULT_ID, COMP_1_NAME, COMP_2_NAME, WINNER, MATCH_DATE);
+	private final String RESULTS_TABLE = "results";
+	private final String RESULT_ID = "_id";
+	private final String COMP_1_ID = "competitor_1_id";
+	private final String COMP_2_ID = "competitor_2_id";
+	private final String WINNER_ID = "winner_id";
+	private final String MATCH_DATE = "match_date";
 
 
 
+	public Database(Context c) {
+		this.context = c;
+		helper = new SQLHelper(c);
+		this.db = helper.getWritableDatabase();
+	}
 
+
+	public void close() {
+		helper.close(); //Closes the database - very important!
+	}
+
+
+	public void saveCompetitors(ArrayList<Competitor> competitors) {
+
+		for (Competitor c : competitors)  {
+
+			ContentValues newCompetitor = new ContentValues();
+			newCompetitor.put(COMPETITOR_NAME, c.name);
+			db.insertOrThrow(COMPETITORS_TABLE, null, newCompetitor);
+
+		}
+
+	}
+
+
+
+	public class SQLHelper extends SQLiteOpenHelper {
+
+		private static final String SQL_TAG = "DB / SQL HELPER";
+
+		public SQLHelper(Context c){
+			super(c, DB_NAME, null, DB_VERSION);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+
+
+			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + RESULTS_TABLE);
+
+			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT UNIQUE )";  //todo check SQL
+			String createCompetitorsSQL = String.format(createCompetitorsBase, COMPETITORS_TABLE, COMP_ID, COMPETITOR_NAME);
+
+			String createResultsBase = "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER )";
+			String createResultsSQL = String.format(createResultsBase, RESULTS_TABLE, RESULT_ID, COMP_1_ID, COMP_2_ID, WINNER_ID, MATCH_DATE);
+
+
+			Log.d(SQL_TAG, createCompetitorsSQL);
+			db.execSQL(createCompetitorsSQL);
+
+			Log.d(SQL_TAG, createResultsSQL);
+			db.execSQL(createResultsSQL);
+
+
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + RESULTS_TABLE);
+
+			onCreate(db);
+			Log.w(SQL_TAG, "Upgrade table - drop and recreate it");
+		}
+	}
 }

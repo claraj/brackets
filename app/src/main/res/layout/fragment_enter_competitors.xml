@@ -1,0 +1,46 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.clara.brackets.EnterCompetitorsFragment">
+
+
+    <TextView
+        android:id="@+id/enter_competitor_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/enter_competitor_name_tv"/>
+
+    <EditText
+        android:id="@+id/new_competitor_name_et"
+        android:layout_below="@id/enter_competitor_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/save_competitor_name_button"
+        android:text="@string/save_competitor_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enter_competitor_name"
+        />
+
+
+    <ListView
+        android:id="@+id/current_competitors_list"
+        android:layout_below="@id/new_competitor_name_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </ListView>
+
+    <Button
+        android:id="@+id/save_competitors_button"
+        android:text="@string/save_competitors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/current_competitors_list"
+        android:layout_alignParentBottom="true"/>
+
+
+</RelativeLayout>

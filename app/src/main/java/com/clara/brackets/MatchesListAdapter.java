@@ -2,6 +2,7 @@ package com.clara.brackets;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +19,11 @@ import java.util.List;
 public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 	private static final String TAG = "MATCHES LIST ADAPTER";
-	Context context;
+	//Context context;
 
 	public MatchesListAdapter(Context context, int resource, List<Match> objects) {
 		super(context, resource, objects);
-		this.context = context;
+		//this.context = context;
 	}
 
 	@Override
@@ -31,18 +32,27 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 		Log.d(TAG, "Matches list adapter get view for " + getItem(position));
 
 		if (convertView == null) {
-			LayoutInflater inflater = ((Activity)context) .getLayoutInflater();
-			inflater.inflate(R.layout.match_list_element, parent);
-
+			LayoutInflater inflater = LayoutInflater.from(getContext());
+			convertView = inflater.inflate(R.layout.match_list_element, null);
 		}
+
 
 		TextView competitor1 = (TextView) convertView.findViewById(R.id.first_competitor_tv);
 		TextView competitor2 = (TextView) convertView.findViewById(R.id.second_competitor_tv);
 
 		Match match = getItem(position);
 
-		competitor1.setText(match.comp_1.name);
-		competitor2.setText(match.comp_2.name);
+		if (match.comp_1 != null) {
+			competitor1.setText(match.comp_1.name);
+		} else {
+			competitor1.setText("no opponent");
+		}
+
+		if (match.comp_2 != null) {
+			competitor2.setText(match.comp_2.name);
+		} else {
+			competitor2.setText("no opponent");
+		}
 
 		return convertView;
 

@@ -1,11 +1,7 @@
 package com.clara.brackets;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,13 +10,20 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
- * Created by admin on 11/19/16.
+ * Created by Clara on 11/19/16.
+ * List adapter for one level of the competition. Show competitors names, and match date. Highlights winner.
  */
 
 public class MatchesListAdapter extends ArrayAdapter<Match> {
+
+	private static String dateTemplate = "kk:mm, dd/MM/yy";
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat(dateTemplate, Locale.getDefault());
 
 	private static final String TAG = "MATCHES LIST ADAPTER";
 
@@ -40,23 +43,33 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 		TextView competitor1 = (TextView) convertView.findViewById(R.id.first_competitor_tv);
 		TextView competitor2 = (TextView) convertView.findViewById(R.id.second_competitor_tv);
+		TextView dateTV = (TextView) convertView.findViewById(R.id.match_date_tv);
+
 
 		Match match = getItem(position);
 
 		if (match == null) { return convertView; }
 
+
+		if (match.matchDate != null)  {
+			String dateString = dateFormat.format(match.matchDate);
+			dateTV.setText(dateString);
+		}
+
+
 		if (match.comp_1 != null) {
 			competitor1.setText(match.comp_1.name);
 		} else {
-			competitor1.setText(R.string.tbd);
+			competitor1.setText(R.string.tbd);  //no competitor identified yet
 		}
 
 		if (match.comp_2 != null) {
 			competitor2.setText(match.comp_2.name);
 		} else {
-			competitor2.setText(R.string.tbd);
+			competitor2.setText(R.string.tbd);   //no competitor identified yet
 		}
 
+		//If winner known, change text to winner color; change loser color
 
 		if (match.winner != null && match.winner == match.comp_1) {
 
@@ -64,8 +77,8 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 			competitor1.setTypeface(null, Typeface.BOLD);
 			competitor1.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
-
 			competitor2.setTextColor(ContextCompat.getColor(getContext(), R.color.loser_text));
+
 		}
 
 		if (match.winner != null && match.winner == match.comp_2) {
@@ -77,6 +90,20 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 			competitor1.setTextColor(ContextCompat.getColor(getContext(), R.color.loser_text));
 
 		}
+
+
+		//Deal with byes - competitor automatically wins and progresses to next level
+
+		if (match.comp_1 != null && match.comp_1.bye) {
+			competitor2.setTypeface(null, Typeface.BOLD);
+			competitor2.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
+		}
+
+		if (match.comp_2 != null && match.comp_2.bye) {
+			competitor1.setTypeface(null, Typeface.BOLD);
+			competitor1.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
+		}
+
 
 		return convertView;
 

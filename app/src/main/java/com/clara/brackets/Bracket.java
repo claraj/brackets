@@ -113,9 +113,8 @@ public class Bracket implements Parcelable {
 
 
 	//toString isn't going to work very well here.
-	// These two methods log all of the tree's nodes to the Run console.
+	// These two methods log all of the tree's nodes to the console.
 	public void logTree() {
-		Log.d(TAG, root.toString());
 		print(root);
 	}
 

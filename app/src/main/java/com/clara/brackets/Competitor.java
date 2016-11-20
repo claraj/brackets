@@ -26,6 +26,12 @@ public class Competitor implements Parcelable {
 		name = BYE;
 	}
 
+	public Competitor(String name, long id, boolean bye) {
+		this.name = name;
+		this.bye = bye;
+		this.id = id;
+	}
+
 
 	@Override
 	public String toString() {

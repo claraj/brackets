@@ -114,6 +114,23 @@ public class BracketManager {
 
 	}
 
+	public void saveUpdatedMatch(Match match) {
+
+		ArrayList<Match> oneMatch = new ArrayList<>();
+		oneMatch.add(match);
+
+		database.updateBracketMatches(oneMatch);
+
+	}
+
+
+	public void getCompetitorsFromDB() {
+
+		mCompetitors = database.readCompetitors();
+
+	}
+
+
 
 	public void saveNewMatchesToDB(Bracket bracket) {
 		//todo

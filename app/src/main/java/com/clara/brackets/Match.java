@@ -113,8 +113,16 @@ public class Match implements Parcelable {
 
 	public void advanceWinningChildren() {
 
+		//If root, return
+
+		if (parent == null) {
+			return;
+		}
+
 		if (comp_1 != null && comp_2 != null && (comp_1.bye || winner == comp_2 )) {
+
 			//comp_2 is winner, advance comp_2 to parentMatch
+
 			winner = comp_2;
 
 			if (isLeftChild) {
@@ -194,6 +202,7 @@ public class Match implements Parcelable {
 	public String toString() {
 		return "Match{" +
 				"nodeId=" + nodeId +
+				"database pk" + db_id +
 				", comp_1=" + comp_1 +
 				", comp_2=" + comp_2 +
 				", winner=" + winner +

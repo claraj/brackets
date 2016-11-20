@@ -2,6 +2,7 @@ package com.clara.brackets;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -18,7 +19,10 @@ public class Database {
 	private Context context;
 	private SQLHelper helper;
 	private SQLiteDatabase db;
-	private  static final String DB_NAME = "products.db";
+
+	private final String TAG = "DATABASE";
+
+	private  static final String DB_NAME = "brackets.db";
 
 	private  static final int DB_VERSION = 1;
 
@@ -93,6 +97,7 @@ public class Database {
 			newCompetitor.put(COMPETITOR_NAME, c.name);
 			long pk = db.insertOrThrow(COMPETITORS_TABLE, null, newCompetitor);
 			c.id = pk;
+
 		}
 
 
@@ -177,8 +182,6 @@ public class Database {
 	}
 
 	public void updateBracketMatches(ArrayList<Match> matches) {
-		//todo
-
 
 		for (Match match : matches) {
 
@@ -192,10 +195,12 @@ public class Database {
 				values.put(COMP_1_ID, -1);   //no competitor
 			}
 
-			if (match.comp_1.bye) {
-				values.put(COMP_1_IS_BYE, true);
+			// 0 is false and 1 is true
+
+			if (match.comp_1 != null && match.comp_1.bye) {
+				values.put(COMP_1_IS_BYE, 1);
 			} else {
-				values.put(COMP_1_IS_BYE, false);
+				values.put(COMP_1_IS_BYE, 0);
 			}
 
 
@@ -208,10 +213,12 @@ public class Database {
 				values.put(COMP_2_ID, -1);   //no competitor
 			}
 
-			if (match.comp_2.bye) {
-				values.put(COMP_2_IS_BYE, true);
+			// 0 is false and 1 is true
+
+			if (match.comp_2 != null && match.comp_2.bye) {
+				values.put(COMP_2_IS_BYE, 1);
 			} else {
-				values.put(COMP_2_IS_BYE, false);     //byes still have id numbers.
+				values.put(COMP_2_IS_BYE, 0);     //byes still have id numbers.
 			}
 
 
@@ -281,6 +288,40 @@ public class Database {
 
 	}
 
+
+	public void allData() {
+
+		Cursor c = db.query(MATCHES_TABLE, null, null, null, null, null, null); //select * from match table
+
+		while (c.moveToNext()) {
+
+	/* MATCH_ID, COMP_1_ID, COMP_1_IS_BYE, COMP_2_ID, COMP_2_IS_BYE,
+	WINNER_ID, LEVEL, NODE_ID, MATCH_DATE, LEFT_CHILD_ID, RIGHT_CHILD_ID, IS_LEFT_CHILD);
+*/
+			String output = "";
+			output += MATCH_ID + c.getInt(0) + " - ";
+			output += COMP_1_ID + c.getInt(1) + " - ";
+			output += COMP_1_IS_BYE + c.getInt(2) + " - ";
+			output += COMP_2_ID + c.getInt(3) + " - ";
+			output += COMP_2_IS_BYE + c.getInt(4) + " - ";
+			output += WINNER_ID + c.getInt(5) + " - ";
+			output += LEVEL + c.getInt(6) + " - ";
+			output += NODE_ID + c.getInt(7) + " - ";
+			output += MATCH_DATE + c.getLong(8) + " - ";
+			output += LEFT_CHILD_ID + c.getInt(9) + " - ";
+			output += RIGHT_CHILD_ID + c.getInt(10) + " - ";
+			output += IS_LEFT_CHILD + c.getInt(11);
+
+			Log.d(TAG, output);
+
+		}
+
+		c.close();
+
+	}
+
+
+
 	public ArrayList<Match> getAllMatchesForBracket() {
 
 		return null;    //todo
@@ -288,6 +329,38 @@ public class Database {
 		//populate comp_1 and comp_2 with database queries
 
 	}
+
+	public ArrayList<Competitor> readCompetitors() {
+
+		ArrayList<Competitor> competitors = new ArrayList<>();
+
+		Cursor cursor = db.query(COMPETITORS_TABLE, null, null, null, null, null, null);
+
+		while (cursor.moveToNext()) {
+
+/*			private final String COMP_ID = "_id";
+			private final String COMPETITOR_NAME = "name";
+			private final String COMP_IS_BYE = "is_bye";
+*/
+			long id = cursor.getLong(0);
+			String name = cursor.getString(1);
+			int bye = cursor.getInt(2);
+			// 0 is false and 1 is true
+
+			boolean isBye = (bye == 1 ) ? true : false;
+
+			Competitor comp = new Competitor(name, id, isBye);
+
+			competitors.add(comp);
+
+		}
+
+		cursor.close();
+		return competitors;
+
+
+	}
+
 
 	public class SQLHelper extends SQLiteOpenHelper {
 
@@ -309,7 +382,7 @@ public class Database {
 			String createMatchesBase = "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, " +
 					"%s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, " +     //comp_1, comp_1 is bye, same for comp 2
 					"%s INTEGER, " +					//winner id
-					"%s INTEGER, %s INTEGER, " +    	//level, nodeid
+					"%s INTEGER, %s INTEGER, " +    	//level, node id
 					"%s INTEGER, " +					//match date (as timestamp)
 					"%s INTEGER, %s INTEGER, " +				//left child id, right child id
 					"%s INTEGER " +					//is left child

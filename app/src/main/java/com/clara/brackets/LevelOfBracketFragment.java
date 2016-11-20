@@ -1,19 +1,18 @@
 package com.clara.brackets;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -30,9 +29,10 @@ public class LevelOfBracketFragment extends Fragment {
 	private static final String ARG_MATCHES = "param_list_of_matches";
 	private static final String ARG_LEVEL = "param_level_int";
 	private static final String TAG = "LEVEL OF BRACKET FRAG";
-	//private static final String ARG_PARAM2 = "param2";
+	private static final java.lang.String DIALOG_TAG = "dialog_fragment_transaction_tag";
 
 	private ArrayList<Match> mMatches;
+	private MatchesListAdapter mAdapter;
 	private int mLevel;
 
 	private OnMatchResult mListener;
@@ -75,15 +75,41 @@ public class LevelOfBracketFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.fragment_level_of_bracket, container, false);
 
-		MatchesListAdapter adapter = new MatchesListAdapter(getContext(), R.layout.match_list_element, mMatches);
+		mAdapter = new MatchesListAdapter(getContext(), R.layout.match_list_element, mMatches);
 
 		ListView listView = (ListView) view.findViewById(R.id.matches_listview);
 
-		listView.setAdapter(adapter);
+		listView.setAdapter(mAdapter);
 
 		TextView levelTV = (TextView) view.findViewById(R.id.level_tv);
 		levelTV.setText("Level = " + mLevel);
 
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				Log.d(TAG, "click on item");
+
+				Match match = mAdapter.getItem(i);
+
+				if (match.comp_1 == null && match.comp_2 != null)  {
+					Toast.makeText(LevelOfBracketFragment.this.getActivity(), "The winner is " + match.comp_2.name, Toast.LENGTH_LONG).show();
+				}
+
+				else if (match.comp_1 != null && match.comp_2 == null)  {
+					Toast.makeText(LevelOfBracketFragment.this.getActivity(), "The winner is " + match.comp_1.name, Toast.LENGTH_LONG).show();
+				}
+
+				else if (match.comp_1 == null && match.comp_2 == null) {
+					//don't think this can happen (?)
+					Log.e(TAG, "comp1 and comp2 are null" + match);
+				}
+
+				else {
+					MatchResultDialogFragment fragment = MatchResultDialogFragment.newInstance(mAdapter.getItem(i));
+					fragment.show(getFragmentManager(), DIALOG_TAG);
+				}
+			}
+		});
 		return view;
 
 	}
@@ -111,6 +137,14 @@ public class LevelOfBracketFragment extends Fragment {
 		super.onDetach();
 		mListener = null;
 	}
+
+	public void updateList(ArrayList<Match> matches) {
+		mMatches = matches;
+		mAdapter.clear();
+		mAdapter.addAll(mMatches);
+		mAdapter.notifyDataSetChanged();
+	}
+
 
 	/**
 	 * This interface must be implemented by activities that contain this

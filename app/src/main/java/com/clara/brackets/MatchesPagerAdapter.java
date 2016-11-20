@@ -22,14 +22,19 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 		super(fm);
 	}
 
+	LevelOfBracketFragment currentFragment;
+	int currentPosition;
+
 	@Override
 	public Fragment getItem(int position) {
 
 		ArrayList<Match> matches = mBracket.allMatchesAtLevel(position);
 		Log.d(TAG, "Adapter get item position " + position + matches.toString());
 
-		return LevelOfBracketFragment.newInstance( mBracket.allMatchesAtLevel(position), position);
+		currentFragment = LevelOfBracketFragment.newInstance( mBracket.allMatchesAtLevel(position), position);
+		currentPosition = position;
 
+		return currentFragment;
 	}
 
 	@Override
@@ -39,6 +44,12 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 
 	public void setBracket(Bracket bracket) {
 		this.mBracket = bracket;
+
+		//todo tell current Fragment displayed to update
+
+		//this seems hacky...
+
+		currentFragment.updateList(mBracket.allMatchesAtLevel(currentPosition));
 
 
 	}

@@ -19,7 +19,7 @@ import android.view.ViewGroup;
  * Use the {@link EnterResultsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EnterResultsFragment extends Fragment {
+public class EnterResultsFragment extends Fragment  implements MatchResultDialogFragment.MatchResultDialogFragmentListener {
 
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_BRACKET = "bracket";
@@ -28,6 +28,8 @@ public class EnterResultsFragment extends Fragment {
 	private Bracket mBracket;
 
 	private OnFragmentInteractionListener mListener;
+
+	MatchesPagerAdapter pagerAdapter;
 
 	public EnterResultsFragment() {
 		// Required empty public constructor
@@ -69,7 +71,7 @@ public class EnterResultsFragment extends Fragment {
 
 		//The pager is for swiping between different levels of the bracket.
 		ViewPager pager = (ViewPager) view.findViewById(R.id.matches_pager);
-		MatchesPagerAdapter pagerAdapter = new MatchesPagerAdapter(getChildFragmentManager());
+		pagerAdapter = new MatchesPagerAdapter(getChildFragmentManager());
 		pagerAdapter.setBracket(mBracket);
 		pager.setAdapter(pagerAdapter);
 
@@ -115,5 +117,19 @@ public class EnterResultsFragment extends Fragment {
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
 	//	void onFragmentInteraction(Uri uri);
+	}
+
+
+	@Override
+	public void matchResultUpdated(Match match) {
+		//notify Activity
+		//match has to tell it's parent what updates
+
+		Log.d(TAG, "updated match " + match);
+
+		mBracket.updateMatchWinner(match);
+		mBracket.updateParent(match);
+		pagerAdapter.setBracket(mBracket);
+
 	}
 }

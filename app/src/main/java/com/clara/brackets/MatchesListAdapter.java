@@ -2,6 +2,8 @@ package com.clara.brackets;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +21,9 @@ import java.util.List;
 public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 	private static final String TAG = "MATCHES LIST ADAPTER";
-	//Context context;
 
 	public MatchesListAdapter(Context context, int resource, List<Match> objects) {
 		super(context, resource, objects);
-		//this.context = context;
 	}
 
 	@Override
@@ -52,6 +52,23 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 			competitor2.setText(match.comp_2.name);
 		} else {
 			competitor2.setText("no opponent");
+		}
+
+		if (match.winner != null && match.winner == match.comp_1) {
+			//competitor1.setTextColor(R.color.winner);
+			Log.d(TAG, " winner is comp_1 set  style");
+
+			competitor1.setTypeface(null, R.style.MatchWinner);
+			competitor2.setTypeface(null, R.style.MatchLoser);
+
+		}
+
+		if (match.winner != null && match.winner == match.comp_2) {
+			Log.d(TAG, "winner is comp_2 loser style");
+
+			competitor1.setTypeface(null, R.style.MatchLoser);
+			competitor2.setTypeface(null, R.style.MatchWinner);
+
 		}
 
 		return convertView;

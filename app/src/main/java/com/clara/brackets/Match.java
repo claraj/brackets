@@ -2,6 +2,7 @@ package com.clara.brackets;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Date;
 public class Match implements Parcelable {
 
 
+	private static final String TAG = "MATCH";
 	Competitor comp_1;
 	Competitor comp_2;
 	Competitor winner;     // or should be ids?
@@ -26,7 +28,8 @@ public class Match implements Parcelable {
 	Match leftChild;
 	Match rightChild;
 
-	int parentId;
+	//int parentId;
+	Match parent;
 
 	int nodeId;
 
@@ -62,12 +65,10 @@ public class Match implements Parcelable {
 		this.nodeId = nodeNumberCounter++;
 
 		if (leftChild != null) {
-			//leftChild.nodeId = nodeNumberCounter++;
 			leftChild.addNodeNumbers();
 		}
 
 		if (rightChild != null) {
-			//rightChild.nodeId = nodeNumberCounter++;
 			rightChild.addNodeNumbers();
 		}
 
@@ -89,6 +90,67 @@ public class Match implements Parcelable {
 
 	}
 
+	//assign parent of each node to be the node id of the parent
+	public void setParents() {
+
+		//find your children and set their parentId to you
+
+//		if (leftChild != null) {
+		//			leftChild.parentId = nodeId;
+		//			leftChild.setParents();
+		//		}
+		//
+		//		if (rightChild != null) {
+		//			rightChild.parentId = nodeId;
+		//			rightChild.setParents();
+		//		}
+		if (leftChild != null) {
+			leftChild.parent = this;
+			leftChild.setParents();
+		}
+
+		if (rightChild != null) {
+			rightChild.parent = this;
+			rightChild.setParents();
+		}
+
+	}
+
+
+	void updateWinner(Match nodeWithWinner) {
+
+		if (nodeId == nodeWithWinner.nodeId) {
+			winner = nodeWithWinner.winner;
+			//set parent competitor (comp1 or comp2) to winner
+
+			matchDate = new Date();
+
+			if (parent.comp_1 == null) {
+				parent.comp_1 = this.winner;
+			} else if (parent.comp_2 == null) {
+				parent.comp_2 = this.winner;
+			}
+			else {
+				//error
+				Log.e(TAG, "Not able to update parent " + this + " parent " + parent);
+			}
+
+		}
+
+		else {
+
+			if (leftChild != null) {
+				leftChild.updateWinner(nodeWithWinner);
+			}
+
+			if (rightChild != null) {
+				rightChild.updateWinner(nodeWithWinner);
+			}
+
+
+			}
+
+	}
 
 
 	@Override
@@ -102,7 +164,7 @@ public class Match implements Parcelable {
 				", matchDate=" + matchDate +
 				", leftChild=" + leftChild +
 				", rightChild=" + rightChild +
-				", parentId=" + parentId +
+				//", parentId=" + parent.nodeId +
 				'}';
 	}
 
@@ -116,7 +178,7 @@ public class Match implements Parcelable {
 		level = in.readInt();
 		leftChild = in.readParcelable(Match.class.getClassLoader());
 		rightChild = in.readParcelable(Match.class.getClassLoader());
-		parentId = in.readInt();
+		parent= in.readParcelable(Match.class.getClassLoader());
 		nodeId = in.readInt();
 	}
 
@@ -146,7 +208,7 @@ public class Match implements Parcelable {
 		parcel.writeInt(level);
 		parcel.writeParcelable(leftChild, i);
 		parcel.writeParcelable(rightChild, i);
-		parcel.writeInt(parentId);
+		parcel.writeParcelable(parent, i);
 		parcel.writeInt(nodeId);
 	}
 

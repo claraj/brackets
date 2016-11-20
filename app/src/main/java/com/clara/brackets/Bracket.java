@@ -66,12 +66,14 @@ public class Bracket implements Parcelable {
 
 		//Create tree of given level. All competitors will be null, but leftChild,
 		// rightChild should point to correct children and
-		// TODO nodes should be numbered
+		// nodes should be numbered
 		// and have levels assigned
 
 		root.addEmptyChildren();
 		Match.nodeNumberCounter = 0;
 		root.addNodeNumbers();
+
+		root.setParents();
 
 	}
 
@@ -149,6 +151,21 @@ public class Bracket implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
 	}
+
+	public void updateMatchWinner(Match match) {
+
+		//find this match in the tree and set winner
+
+		root.updateWinner(match);
+
+	}
+
+	public void updateParent(Match match) {
+
+		//find
+
+	}
+
 
 	//A tree of matches
 

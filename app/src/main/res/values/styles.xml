@@ -8,4 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MatchWinner" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColor">#3333FF</item>
+    </style>
+
+
+    <style name="MatchLoser" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:textColor">#AAAAAA</item>
+    </style>
+
 </resources>

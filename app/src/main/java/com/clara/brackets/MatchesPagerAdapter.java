@@ -49,8 +49,11 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 
 		//this seems hacky...
 
-		currentFragment.updateList(mBracket.allMatchesAtLevel(currentPosition));
+		Log.d(TAG, "current fragment is " + currentFragment);
 
+		if (currentFragment != null) {
+			currentFragment.updateList(mBracket.allMatchesAtLevel(currentPosition));
+		}
 
 	}
 }

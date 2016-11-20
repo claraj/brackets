@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,8 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 		Match match = getItem(position);
 
+
+
 		if (match.comp_1 != null) {
 			competitor1.setText(match.comp_1.name);
 		} else {
@@ -55,19 +58,20 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 		}
 
 		if (match.winner != null && match.winner == match.comp_1) {
-			//competitor1.setTextColor(R.color.winner);
+			competitor1.setTypeface(null, Typeface.BOLD);
+			competitor1.setTextColor(Color.RED);
 			Log.d(TAG, " winner is comp_1 set  style");
-
-			competitor1.setTypeface(null, R.style.MatchWinner);
-			competitor2.setTypeface(null, R.style.MatchLoser);
+			competitor2.setTextColor(Color.GRAY);
 
 		}
 
 		if (match.winner != null && match.winner == match.comp_2) {
 			Log.d(TAG, "winner is comp_2 loser style");
 
-			competitor1.setTypeface(null, R.style.MatchLoser);
-			competitor2.setTypeface(null, R.style.MatchWinner);
+			competitor2.setTypeface(null, Typeface.BOLD);
+			competitor2.setTextColor(Color.RED);
+			Log.d(TAG, " winner is comp_1 set  style");
+			competitor1.setTextColor(Color.GRAY);
 
 		}
 

@@ -52,10 +52,11 @@ public class MainActivity extends AppCompatActivity implements
 
 	}
 
+
 	private boolean isCompetitionInProgress() {
 
 		//todo how to check?
-		return true;
+		return false;
 
 	}
 
@@ -77,13 +78,15 @@ public class MainActivity extends AppCompatActivity implements
 	public void onCompetitorListCreated(ArrayList<Competitor> competitors) {
 
 		mCompetitors = competitors;
-		manager.saveCompetitors(mCompetitors);
+		manager.saveCompetitors(mCompetitors);    //this should create a pk_id for each competitor
+
+		Log.d(TAG, "Competitors saved: " + mCompetitors);
 
 		//show enter results screen
 
 		Bracket bracket = manager.createBracket();
 
-		manager.saveMatches();
+		manager.saveNewMatchesToDB(bracket);
 
 		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 
@@ -96,8 +99,9 @@ public class MainActivity extends AppCompatActivity implements
 
 	}
 
-//	@Override
-//	public void onResultOfMatch(Match match) {
-//		Log.d(TAG, "Match result from fragment " + match);
-//	}
+	@Override
+    public void onPause() {
+		manager.closeDB();
+	}
+
 }

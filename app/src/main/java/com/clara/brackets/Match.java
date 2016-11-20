@@ -16,6 +16,9 @@ import java.util.Date;
 public class Match implements Parcelable {
 
 	private static final String TAG = "MATCH";
+
+	long db_id; //primary key from the database
+
 	Competitor comp_1;
 	Competitor comp_2;
 	Competitor winner;
@@ -147,6 +150,19 @@ public class Match implements Parcelable {
 
 
 
+	public void addChildrenToList(ArrayList<Match> matches) {
+
+		if (leftChild != null) {
+			matches.add(leftChild);
+			leftChild.addChildrenToList(matches);
+		}
+
+		if (rightChild != null) {
+			matches.add(rightChild);
+			rightChild.addChildrenToList(matches);
+		}
+
+	}
 
 
 
@@ -157,6 +173,8 @@ public class Match implements Parcelable {
 			//set winner to whatever matchNode's winner is. TODO Anything else to update?
 
 			winner = matchNode.winner;
+			matchDate = matchNode.matchDate;
+
 		}
 
 		else {

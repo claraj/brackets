@@ -5,7 +5,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Map;
+
 
 /**
  * Created by Clara on 11/19/16.
@@ -39,6 +39,10 @@ public class Bracket implements Parcelable {
 		root.addNodeNumbers();			// Add number to the root, then this method will recurse through the nodes adding an ID number to each node
 		root.setParents();				// Recurse through the tree and create a reference to each node's parent node
 
+	}
+
+	public void setParents() {
+		root.setParents();
 	}
 
 
@@ -90,11 +94,21 @@ public class Bracket implements Parcelable {
 
 	ArrayList<Match> getListOfMatches() {
 		//TODO traverse tree; output a list of nodes for saving to the database
-		return null;
+
+		ArrayList<Match> matches = new ArrayList<>();
+
+		matches.add(root);
+
+		root.addChildrenToList(matches);
+
+		return matches;
+
+
 	}
 
 	Bracket(ArrayList<Match> matches) {
 		//TODO re-create tree by doing reverse of method above.
+
 	}
 
 
@@ -127,10 +141,9 @@ public class Bracket implements Parcelable {
 
 
 
-	public void updateMatchWinner(Match match) {
+	public void updateMatchWinnerAndDate(Match match) {
 
-		//find this match in the tree, save new data.
-
+		//find this match in the tree, save new winner
 		root.findAndUpdateMatchWinner(match);
 
 	}

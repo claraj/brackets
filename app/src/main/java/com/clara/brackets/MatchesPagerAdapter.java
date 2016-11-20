@@ -16,9 +16,10 @@ import java.util.ArrayList;
 public class MatchesPagerAdapter extends FragmentPagerAdapter {
 
 	private static final String TAG = "MATCHES PAGER ADAPTER";
-	Bracket mBracket;
 
-	LevelOfBracketFragment[] allFragments;
+	private Bracket mBracket;
+
+	private LevelOfBracketFragment[] allFragments;  //Keep a list of fragments so can notify all when updates are made.
 
 	public MatchesPagerAdapter(FragmentManager fm, Bracket bracket) {
 		super(fm);
@@ -26,8 +27,6 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 		allFragments = new LevelOfBracketFragment[mBracket.getLevels()];
 
 	}
-
-
 
 
 	@Override
@@ -38,6 +37,7 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 
 		LevelOfBracketFragment fragment = LevelOfBracketFragment.newInstance( mBracket.allMatchesAtLevel(position), position);
 
+		//Save fragment in array
 		if ( allFragments[position] == null) {
 			allFragments[position] = fragment;
 		}
@@ -51,11 +51,10 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 	}
 
 	public void setBracket(Bracket bracket) {
+
 		this.mBracket = bracket;
 
-		//todo tell current Fragment displayed to update
-
-		//todo this seems hacky...
+		//Tell fragments to update with new list of matches
 
 		for (int page = 0 ; page < getCount() ; page++) {
 			if (allFragments[page] != null) {

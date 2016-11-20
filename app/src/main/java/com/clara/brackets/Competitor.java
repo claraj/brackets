@@ -12,7 +12,7 @@ public class Competitor implements Parcelable {
 	static final String BYE = "* BYE *";
 
 	String name;
-	int id;        //from database.
+	long id;        //from database.
 
 	boolean bye;   // Does this represent a bye - the other competitor automatically wins?
 
@@ -26,17 +26,28 @@ public class Competitor implements Parcelable {
 		name = BYE;
 	}
 
+
 	@Override
 	public String toString() {
-		return name;
+		return name + " id " + id;
 	}
 
-
-
-	//todo include bye value
 	protected Competitor(Parcel in) {
 		name = in.readString();
-		id = in.readInt();
+		id = in.readLong();
+		bye = in.readByte() != 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(name);
+		dest.writeLong(id);
+		dest.writeByte((byte) (bye ? 1 : 0));
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
 	}
 
 	public static final Creator<Competitor> CREATOR = new Creator<Competitor>() {
@@ -51,14 +62,6 @@ public class Competitor implements Parcelable {
 		}
 	};
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
 
-	@Override
-	public void writeToParcel(Parcel parcel, int i) {
-		parcel.writeString(name);
-		parcel.writeInt(id);
-	}
+
 }

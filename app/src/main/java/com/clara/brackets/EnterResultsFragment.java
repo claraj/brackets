@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Date;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -126,7 +128,9 @@ public class EnterResultsFragment extends Fragment  implements EnterMatchResultD
 
 		Log.d(TAG, "updated match " + match);
 
-		mBracket.updateMatchWinner(match);
+		match.matchDate = new Date();
+
+		mBracket.updateMatchWinnerAndDate(match);
 		mBracket.advanceWinners();
 		pagerAdapter.setBracket(mBracket);
 

@@ -16,7 +16,8 @@ import java.util.ArrayList;
 
 
 public class LevelOfBracketFragment extends Fragment {
-	// the fragment initialization parameters,
+
+	// the fragment initialization parameters
 	private static final String ARG_MATCHES = "param_list_of_matches";
 	private static final String ARG_LEVEL = "param_level_int";
 
@@ -29,7 +30,6 @@ public class LevelOfBracketFragment extends Fragment {
 	private MatchesListAdapter mAdapter;
 	private int mLevel;
 
-	//private OnMatchResult mListener;
 
 	public LevelOfBracketFragment() {
 		// Required empty public constructor
@@ -100,22 +100,6 @@ public class LevelOfBracketFragment extends Fragment {
 	}
 
 
-//	@Override
-//	public void onAttach(Context context) {
-//		super.onAttach(context);
-//		if (context instanceof OnMatchResult) {
-//			mListener = (OnMatchResult) context;
-//		} else {
-//			throw new RuntimeException(context.toString()
-//					+ " must implement OnMatchResult");
-//		}
-//	}
-
-//	@Override
-//	public void onDetach() {
-//		super.onDetach();
-//		mListener = null;
-//	}
 
 	public void updateList(ArrayList<Match> matches) {
 		mMatches = matches;
@@ -124,19 +108,4 @@ public class LevelOfBracketFragment extends Fragment {
 		mAdapter.notifyDataSetChanged();
 	}
 
-
-//	/**
-//	 * This interface must be implemented by activities that contain this
-//	 * fragment to allow an interaction in this fragment to be communicated
-//	 * to the activity and potentially other fragments contained in that
-//	 * activity.
-//	 * <p>
-//	 * See the Android Training lesson <a href=
-//	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-//	 * >Communicating with Other Fragments</a> for more information.
-//	 */
-//	public interface OnMatchResult {
-//		// TODO: Update argument type and name
-//		void onResultOfMatch(Match match);
-//	}
 }

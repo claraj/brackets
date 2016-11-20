@@ -18,12 +18,17 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 	private static final String TAG = "MATCHES PAGER ADAPTER";
 	Bracket mBracket;
 
-	public MatchesPagerAdapter(FragmentManager fm) {
+	LevelOfBracketFragment[] allFragments;
+
+	public MatchesPagerAdapter(FragmentManager fm, Bracket bracket) {
 		super(fm);
+		mBracket = bracket;
+		allFragments = new LevelOfBracketFragment[mBracket.getLevels()];
+
 	}
 
-	private LevelOfBracketFragment currentFragment;
-	private int currentPosition;
+
+
 
 	@Override
 	public Fragment getItem(int position) {
@@ -31,10 +36,13 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 		ArrayList<Match> matches = mBracket.allMatchesAtLevel(position);
 		Log.d(TAG, "Adapter get item position " + position + matches.toString());
 
-		currentFragment = LevelOfBracketFragment.newInstance( mBracket.allMatchesAtLevel(position), position);
-		currentPosition = position;
+		LevelOfBracketFragment fragment = LevelOfBracketFragment.newInstance( mBracket.allMatchesAtLevel(position), position);
 
-		return currentFragment;
+		if ( allFragments[position] == null) {
+			allFragments[position] = fragment;
+		}
+
+		return fragment;
 	}
 
 	@Override
@@ -49,10 +57,10 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 
 		//todo this seems hacky...
 
-		Log.d(TAG, "current fragment is " + currentFragment);
-
-		if (currentFragment != null) {
-			currentFragment.updateList(mBracket.allMatchesAtLevel(currentPosition));
+		for (int page = 0 ; page < getCount() ; page++) {
+			if (allFragments[page] != null) {
+				allFragments[page].updateList(mBracket.allMatchesAtLevel(page));
+			}
 		}
 
 	}

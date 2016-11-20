@@ -45,8 +45,18 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 		if (match == null) { return convertView; }
 
-		competitor1.setText(match.comp_1.name);
-		competitor2.setText(match.comp_2.name);
+		if (match.comp_1 != null) {
+			competitor1.setText(match.comp_1.name);
+		} else {
+			competitor1.setText(R.string.tbd);
+		}
+
+		if (match.comp_2 != null) {
+			competitor2.setText(match.comp_2.name);
+		} else {
+			competitor2.setText(R.string.tbd);
+		}
+
 
 		if (match.winner != null && match.winner == match.comp_1) {
 

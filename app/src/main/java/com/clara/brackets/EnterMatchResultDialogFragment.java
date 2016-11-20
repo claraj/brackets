@@ -13,7 +13,7 @@ import android.util.Log;
  * Created by admin on 11/19/16.
  */
 
-public class MatchResultDialogFragment extends DialogFragment {
+public class EnterMatchResultDialogFragment extends DialogFragment {
 
 	private static final String ARG_MATCH = "arg_match";
 
@@ -29,10 +29,10 @@ public class MatchResultDialogFragment extends DialogFragment {
 		void matchResultUpdated(Match match);
 	}
 
-	public static MatchResultDialogFragment newInstance(Match match) {
+	public static EnterMatchResultDialogFragment newInstance(Match match) {
 		Bundle args = new Bundle();
 		args.putParcelable(ARG_MATCH, match);
-		MatchResultDialogFragment fragment = new MatchResultDialogFragment();
+		EnterMatchResultDialogFragment fragment = new EnterMatchResultDialogFragment();
 		fragment.setArguments(args);
 		return fragment;
 	}

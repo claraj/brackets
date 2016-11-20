@@ -1,7 +1,6 @@
 package com.clara.brackets;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -19,7 +18,7 @@ import android.view.ViewGroup;
  * Use the {@link EnterResultsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EnterResultsFragment extends Fragment  implements MatchResultDialogFragment.MatchResultDialogFragmentListener {
+public class EnterResultsFragment extends Fragment  implements EnterMatchResultDialogFragment.MatchResultDialogFragmentListener {
 
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_BRACKET = "bracket";
@@ -71,8 +70,8 @@ public class EnterResultsFragment extends Fragment  implements MatchResultDialog
 
 		//The pager is for swiping between different levels of the bracket.
 		ViewPager pager = (ViewPager) view.findViewById(R.id.matches_pager);
-		pagerAdapter = new MatchesPagerAdapter(getChildFragmentManager());
-		pagerAdapter.setBracket(mBracket);
+		pagerAdapter = new MatchesPagerAdapter(getChildFragmentManager(), mBracket);
+		//pagerAdapter.setBracket(mBracket);
 		pager.setAdapter(pagerAdapter);
 
 		return view;
@@ -130,6 +129,7 @@ public class EnterResultsFragment extends Fragment  implements MatchResultDialog
 		mBracket.updateMatchWinner(match);
 		mBracket.advanceWinners();
 		pagerAdapter.setBracket(mBracket);
+
 
 	}
 }

@@ -9,8 +9,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
-		EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener,
-		LevelOfBracketFragment.OnMatchResult {
+		EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener
+		 {
 
 	ArrayList<Competitor> mCompetitors;
 
@@ -96,8 +96,8 @@ public class MainActivity extends AppCompatActivity implements
 
 	}
 
-	@Override
-	public void onResultOfMatch(Match match) {
-		Log.d(TAG, "Match result from fragment " + match);
-	}
+//	@Override
+//	public void onResultOfMatch(Match match) {
+//		Log.d(TAG, "Match result from fragment " + match);
+//	}
 }

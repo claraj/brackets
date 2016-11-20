@@ -10,6 +10,8 @@ todo save winner correctly and update UI
 Keeps track of winners of each bracket.
 
 
+todo are two root nodes beting created?
+
 todo save to database
 
 todo disable matches with winner set
@@ -22,6 +24,11 @@ todo tidy
 
 todo save match dates, display in UI
 
-* Todo - draw current state of tournament
+
+//Extension features:
+* Todo - draw diagram current state of tournament
+* Manage multiple tournaments
+* Edit list of competitors before starting tournament
+* Specific scoring systems e.g. if for soccer, store results of matches
 
 

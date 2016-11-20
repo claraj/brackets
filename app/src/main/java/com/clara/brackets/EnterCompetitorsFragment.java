@@ -39,14 +39,9 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 
 	private ArrayList<Competitor> mCompetitors;
 
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+	// the fragment initialization parameters,
 	private static final String ARG_COMPETITOR_LIST = "param1";
-	private static final String ARG_PARAM2 = "param2";
 
-	// TODO: Rename and change types of parameters
-	//private  mCompetitors;
-	//private String mParam2;
 
 	private OnEnterCompetitorFragmentInteractionListener mListener;
 
@@ -54,15 +49,10 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		// Required empty public constructor
 	}
 
-//	/**
-//	 * Use this factory method to create a new instance of
-//	 * this fragment using the provided parameters.
-//	 *
-//	 * @param param1 Parameter 1.
-//	 * @param param2 Parameter 2.
-//	 * @return A new instance of fragment EnterCompetitorsFragment.
-//	 */
-	// TODO: Rename and change types and number of parameters
+	/**
+	 * Use this factory method to create a new instance of
+	 * this fragment using the provided parameters.
+	 */
 	public static EnterCompetitorsFragment newInstance(ArrayList<Competitor> competitors) {
 		EnterCompetitorsFragment fragment = new EnterCompetitorsFragment();
 		Bundle args = new Bundle();
@@ -112,7 +102,7 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		if (mCompetitors.size() == 0) {										//onCreate runs first, and initializes mCompetitors.
 			mNumberCompetitors.setText("(No competitors)");
 		} else {
-			mNumberCompetitors.setText("(" + mCompetitors.size() + " competitors)");
+			mNumberCompetitors.setText(" (" + mCompetitors.size() + " competitor(s) )");
 		}
 
 		return view;
@@ -142,19 +132,25 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 
 		switch (view.getId()) {
 			case R.id.save_competitor_name_button: {
-				//save competitor name
+				//Get competitor name
 				String name = mNameET.getText().toString();
 				//Verify name is unique
 				if (duplicateName(name)) {
 					Toast.makeText(this.getContext(), "You already have a competitor called " + name, Toast.LENGTH_LONG).show();
 					return;
 				}
+
+				if (name.equals("")) {
+					Toast.makeText(this.getContext(), "Please enter a name", Toast.LENGTH_LONG).show();
+					return;
+				}
+
 				Competitor competitor = new Competitor(name);
 				mCompetitors.add(competitor);
-				mNameET.setText("");   //clear
+				mNameET.setText("");   //clear EditText for the new competitor's name
 				mAdapter.notifyDataSetChanged();
 
-				mNumberCompetitors.setText("(" + mCompetitors.size() + " competitors)");
+				mNumberCompetitors.setText(" (" + mCompetitors.size() + " competitors)");
 
 				break;
 
@@ -183,17 +179,12 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 	}
 
 	/**
-	 * This interface must be implemented by activities that contain this
+	 * This interface must be implemented by Activities that contain this
 	 * fragment to allow an interaction in this fragment to be communicated
 	 * to the activity and potentially other fragments contained in that
-	 * activity.
-	 * <p>
-	 * See the Android Training lesson <a href=
-	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-	 * >Communicating with Other Fragments</a> for more information.
+	 * Activity.
 	 */
 	public interface OnEnterCompetitorFragmentInteractionListener {
-		// TODO: Update argument type and name
 		void onCompetitorListCreated(ArrayList<Competitor> competitors);
 	}
 }

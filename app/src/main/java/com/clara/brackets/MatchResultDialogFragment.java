@@ -40,6 +40,9 @@ public class MatchResultDialogFragment extends DialogFragment {
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
+
+		//the parent fragment is a EnterResultsFragment
+
 		if (getParentFragment() instanceof MatchResultDialogFragmentListener) {
 			mListener = (MatchResultDialogFragmentListener) getParentFragment();
 		} else {

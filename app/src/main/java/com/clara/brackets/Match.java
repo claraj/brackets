@@ -15,11 +15,10 @@ import java.util.Date;
 
 public class Match implements Parcelable {
 
-
 	private static final String TAG = "MATCH";
 	Competitor comp_1;
 	Competitor comp_2;
-	Competitor winner;     // or should be ids?
+	Competitor winner;
 
 	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
 
@@ -31,34 +30,35 @@ public class Match implements Parcelable {
 	//int parentId;
 	Match parent;
 
+	boolean isLeftChild;
+
 	int nodeId;
 
-	Match(int level) {
+	Match(int level, boolean isLeftChild) {
 		this.level = level;
-	//	this.nodeId = nodeId;
-	}
-
-	Match() {
+		this.isLeftChild = isLeftChild;
 
 	}
+
+	Match() {}   //needed?
+
 
 	void addEmptyChildren() {
-
 
 		if (level == 0) {
 			return;
 		}
 
-		leftChild = new Match(level - 1);
+		leftChild = new Match(level - 1, true);
 		leftChild.addEmptyChildren();
-		rightChild = new Match(level - 1);
+		rightChild = new Match(level - 1, false);
 		rightChild.addEmptyChildren();
-
 
 	}
 
 
 	static int nodeNumberCounter;
+
 
 	public void addNodeNumbers() {
 
@@ -93,17 +93,8 @@ public class Match implements Parcelable {
 	//assign parent of each node to be the node id of the parent
 	public void setParents() {
 
-		//find your children and set their parentId to you
+		//find your children and set their parent Match object to you
 
-//		if (leftChild != null) {
-		//			leftChild.parentId = nodeId;
-		//			leftChild.setParents();
-		//		}
-		//
-		//		if (rightChild != null) {
-		//			rightChild.parentId = nodeId;
-		//			rightChild.setParents();
-		//		}
 		if (leftChild != null) {
 			leftChild.parent = this;
 			leftChild.setParents();
@@ -117,39 +108,67 @@ public class Match implements Parcelable {
 	}
 
 
-	void updateWinner(Match nodeWithWinner) {
+	public void advanceWinningChildren() {
 
-		if (nodeId == nodeWithWinner.nodeId) {
-			winner = nodeWithWinner.winner;
-			//set parent competitor (comp1 or comp2) to winner
+		if (comp_1 != null && comp_2 != null && (comp_1.bye || winner == comp_2 )) {
+			//comp_2 is winner, advance comp_2 to parentMatch
+			winner = comp_2;
 
-			matchDate = new Date();
-
-			if (parent.comp_1 == null) {
-				parent.comp_1 = this.winner;
-			} else if (parent.comp_2 == null) {
-				parent.comp_2 = this.winner;
-			}
-			else {
-				//error
-				Log.e(TAG, "Not able to update parent " + this + " parent " + parent);
+			if (isLeftChild) {
+				parent.comp_1 = winner;
+			} else {
+				parent.comp_2 = winner;
 			}
 
+		}
+
+		if (comp_2 != null && comp_1 != null && (comp_2.bye || winner == comp_1)) {
+			//comp_1 is winner, advance comp_1 to parent Match
+			winner = comp_1;
+
+			if (isLeftChild) {
+				parent.comp_1 = winner;
+			} else {
+				parent.comp_2 = winner;
+			}
+		}
+
+
+		if (leftChild != null) {
+			leftChild.advanceWinningChildren();
+		}
+
+		if (rightChild != null) {
+			rightChild.advanceWinningChildren();
+		}
+
+
+	}
+
+
+
+
+
+
+	void findAndUpdateMatchWinner(Match matchNode) {
+
+		if (nodeId == matchNode.nodeId) {
+
+			//set winner to whatever matchNode's winner is. TODO Anything else to update?
+
+			winner = matchNode.winner;
 		}
 
 		else {
 
 			if (leftChild != null) {
-				leftChild.updateWinner(nodeWithWinner);
+				leftChild.findAndUpdateMatchWinner(matchNode);
 			}
 
 			if (rightChild != null) {
-				rightChild.updateWinner(nodeWithWinner);
+				rightChild.findAndUpdateMatchWinner(matchNode);
 			}
-
-
-			}
-
+		}
 	}
 
 

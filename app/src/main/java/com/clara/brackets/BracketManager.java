@@ -2,13 +2,12 @@ package com.clara.brackets;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by admin on 11/19/16.
+ * Created by clara on 11/19/16.  creates bracket, deals with database updates.
  */
 
 public class BracketManager {
@@ -37,13 +36,13 @@ public class BracketManager {
 
 	public Bracket createBracket() {
 
+		Collections.shuffle(mCompetitors);
+
 		int levels = padCompetitorList();
 
 		Log.d(TAG, "levels of tree needed = " + levels);
 
-		//Randomize
-
-		Collections.shuffle(mCompetitors);
+		//Randomize. Make sure there are not two byes in the same round.
 
 		//list should have power of two elements. Make tree of appropriate height, set each match leaf to pairs of competitor.
 
@@ -57,9 +56,15 @@ public class BracketManager {
 		Log.d(TAG, "Added competitors to Bracket tree ");
 		bracket.logTree();
 
+		bracket.advanceWinners();   //advances byes from first round
+
+		Log.d(TAG, "Advanced byes (competitors without an opponent for the first round) ");
+		bracket.logTree();
+
 		return bracket;
 
 	}
+
 
 	private int padCompetitorList() {
 
@@ -98,8 +103,10 @@ public class BracketManager {
 
 		int padItems = test - mCompetitors.size();
 
+		int insertPos = 0;
+
 		for (int x = 0 ; x < padItems ; x++) {
-			mCompetitors.add(null);
+			mCompetitors.add(insertPos+=2, new Competitor(true));  //bye competitor spaced two apart
 		}
 
 		Log.d(TAG, mCompetitors.toString());
@@ -109,6 +116,7 @@ public class BracketManager {
 	}
 
 	public void saveMatches() {
+		//todo
 	}
 
 	public Bracket getCurrentBracket() {

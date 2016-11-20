@@ -128,7 +128,7 @@ public class EnterResultsFragment extends Fragment  implements MatchResultDialog
 		Log.d(TAG, "updated match " + match);
 
 		mBracket.updateMatchWinner(match);
-		mBracket.updateParent(match);
+		mBracket.advanceWinners();
 		pagerAdapter.setBracket(mBracket);
 
 	}

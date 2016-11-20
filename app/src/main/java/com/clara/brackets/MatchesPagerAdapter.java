@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by me on 11/19/16. Adapter for pager view.
  *
- * todo recycling views
+ * todo recycling views (?)
  */
 
 public class MatchesPagerAdapter extends FragmentPagerAdapter {
@@ -22,8 +22,8 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 		super(fm);
 	}
 
-	LevelOfBracketFragment currentFragment;
-	int currentPosition;
+	private LevelOfBracketFragment currentFragment;
+	private int currentPosition;
 
 	@Override
 	public Fragment getItem(int position) {
@@ -47,7 +47,7 @@ public class MatchesPagerAdapter extends FragmentPagerAdapter {
 
 		//todo tell current Fragment displayed to update
 
-		//this seems hacky...
+		//todo this seems hacky...
 
 		Log.d(TAG, "current fragment is " + currentFragment);
 

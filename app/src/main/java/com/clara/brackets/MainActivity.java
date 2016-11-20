@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
 		if (isCompetitionInProgress()) {
 
 			manager.setCompetitors(mockCompetitors(14));
+
 			enterResultsFragment = EnterResultsFragment.newInstance(manager.createBracket());   //todo provide results (?)
 			transaction.add(R.id.content, enterResultsFragment);
 		} else {

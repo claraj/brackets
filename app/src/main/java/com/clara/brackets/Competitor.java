@@ -9,11 +9,21 @@ import android.os.Parcelable;
 
 public class Competitor implements Parcelable {
 
+	static final String BYE = "* BYE *";
+
 	String name;
-	int id;
+	int id;        //from database.
+
+	boolean bye;   // Does this represent a bye - the other competitor automatically wins?
 
 	public Competitor(String name) {
 		this.name = name;
+		bye = false;
+	}
+
+	public Competitor(boolean bye) {
+		this.bye = bye;
+		name = BYE;
 	}
 
 	@Override
@@ -22,6 +32,8 @@ public class Competitor implements Parcelable {
 	}
 
 
+
+	//todo include bye value
 	protected Competitor(Parcel in) {
 		name = in.readString();
 		id = in.readInt();

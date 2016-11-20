@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,14 +20,12 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class EnterResultsFragment extends Fragment {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
 
-	// TODO: Rename and change types of parameters
-//	private String mParam1;
-//	private String mParam2;
+	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+	private static final String ARG_BRACKET = "bracket";
+	private static final String TAG = "ENTER RESULTS FRAG";
+
+	private Bracket mBracket;
 
 	private OnFragmentInteractionListener mListener;
 
@@ -42,12 +42,11 @@ public class EnterResultsFragment extends Fragment {
 //	 * @return A new instance of fragment EnterResultsFragment.
 //	 */
 	// TODO: Rename and change types and number of parameters
-	public static EnterResultsFragment newInstance(/*String param1, String param2*/) {
+	public static EnterResultsFragment newInstance(Bracket bracket) {
 		EnterResultsFragment fragment = new EnterResultsFragment();
-//		Bundle args = new Bundle();
-//		args.putString(ARG_PARAM1, param1);
-//		args.putString(ARG_PARAM2, param2);
-//		fragment.setArguments(args);
+		Bundle args = new Bundle();
+		args.putParcelable(ARG_BRACKET, bracket);
+		fragment.setArguments(args);
 		return fragment;
 	}
 
@@ -55,8 +54,7 @@ public class EnterResultsFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-//			mParam1 = getArguments().getString(ARG_PARAM1);
-//			mParam2 = getArguments().getString(ARG_PARAM2);
+			mBracket = getArguments().getParcelable(ARG_BRACKET);
 		}
 	}
 
@@ -64,25 +62,38 @@ public class EnterResultsFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_enter_results, container, false);
+		View view = inflater.inflate(R.layout.fragment_enter_results, container, false);
+
+
+		Log.d(TAG, "Creating view for Enter Result Fragment");
+
+		//The pager is for swiping between different levels of the bracket.
+		ViewPager pager = (ViewPager) view.findViewById(R.id.matches_pager);
+		MatchesPagerAdapter pagerAdapter = new MatchesPagerAdapter(getChildFragmentManager());
+		pagerAdapter.setBracket(mBracket);
+		pager.setAdapter(pagerAdapter);
+
+		return view;
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri) {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
-		}
-	}
+//	public void onButtonPressed(Uri uri) {
+//		if (mListener != null) {
+//			mListener.onFragmentInteraction(uri);
+//		}
+//	}
 
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-		if (context instanceof OnFragmentInteractionListener) {
+
+		//TODO - listener not needed yet.
+		/*	if (context instanceof OnFragmentInteractionListener) {
 			mListener = (OnFragmentInteractionListener) context;
 		} else {
 			throw new RuntimeException(context.toString()
 					+ " must implement OnFragmentInteractionListener");
-		}
+		} */
 	}
 
 	@Override
@@ -103,6 +114,6 @@ public class EnterResultsFragment extends Fragment {
 	 */
 	public interface OnFragmentInteractionListener {
 		// TODO: Update argument type and name
-		void onFragmentInteraction(Uri uri);
+	//	void onFragmentInteraction(Uri uri);
 	}
 }

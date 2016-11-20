@@ -10,6 +10,7 @@ import android.os.Parcelable;
 public class Competitor implements Parcelable {
 
 	String name;
+	int id;
 
 	public Competitor(String name) {
 		this.name = name;
@@ -23,6 +24,7 @@ public class Competitor implements Parcelable {
 
 	protected Competitor(Parcel in) {
 		name = in.readString();
+		id = in.readInt();
 	}
 
 	public static final Creator<Competitor> CREATOR = new Creator<Competitor>() {
@@ -45,5 +47,6 @@ public class Competitor implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
 		parcel.writeString(name);
+		parcel.writeInt(id);
 	}
 }

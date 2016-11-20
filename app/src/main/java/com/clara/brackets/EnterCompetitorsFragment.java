@@ -12,6 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -29,10 +33,11 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 	private static final String TAG = "ENTER COMPETITORS FRAG";
 	private Button mSaveNameButton, mSaveAllButton;
 	private EditText mNameET;
+	private TextView mNumberCompetitors;
 	private ListView mListView;
 	private ArrayAdapter<Competitor> mAdapter;
 
-	private ArrayList<Competitor> competitors;
+	private ArrayList<Competitor> mCompetitors;
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -40,8 +45,8 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 	private static final String ARG_PARAM2 = "param2";
 
 	// TODO: Rename and change types of parameters
-	private String mCompetitors;
-	private String mParam2;
+	//private  mCompetitors;
+	//private String mParam2;
 
 	private OnEnterCompetitorFragmentInteractionListener mListener;
 
@@ -58,12 +63,11 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 //	 * @return A new instance of fragment EnterCompetitorsFragment.
 //	 */
 	// TODO: Rename and change types and number of parameters
-	public static EnterCompetitorsFragment newInstance(ArrayList<Competitor> competitors /*, String param2*/) {
+	public static EnterCompetitorsFragment newInstance(ArrayList<Competitor> competitors) {
 		EnterCompetitorsFragment fragment = new EnterCompetitorsFragment();
 		Bundle args = new Bundle();
 		args.putParcelableArrayList(ARG_COMPETITOR_LIST, competitors);
-//		args.putString(ARG_PARAM2, param2);
-//		fragment.setArguments(args);
+		fragment.setArguments(args);
 		return fragment;
 	}
 
@@ -74,12 +78,16 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		Log.d(TAG, "ON CREATE RUNS");
 		
 		if (getArguments() != null) {
-			competitors = getArguments().getParcelableArrayList(ARG_COMPETITOR_LIST);
+			mCompetitors = getArguments().getParcelableArrayList(ARG_COMPETITOR_LIST);
 		}
 
-		if (competitors == null) {
-			competitors = new ArrayList<Competitor>();
+		if (mCompetitors == null) {
+			mCompetitors = new ArrayList<>();
 		}
+
+		Log.d(TAG, "mCompetitors " + mCompetitors);
+
+
 	}
 
 	@Override
@@ -92,14 +100,20 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		View view = inflater.inflate(R.layout.fragment_enter_competitors, container, false);
 		mSaveNameButton = (Button) view.findViewById(R.id.save_competitor_name_button);
 		mSaveNameButton.setOnClickListener(this);
+		mNumberCompetitors = (TextView) view.findViewById(R.id.number_of_competitors_tv);
 		mSaveAllButton = (Button) view.findViewById(R.id.save_competitors_button);
 		mSaveAllButton.setOnClickListener(this);
 		mNameET = (EditText) view.findViewById(R.id.new_competitor_name_et);
 		mListView = (ListView) view.findViewById(R.id.current_competitors_list);
 
-		mAdapter = new ArrayAdapter<Competitor>(this.getContext(), R.layout.enter_competitor_list_element, R.id.comp_name_list_tv, competitors);
-
+		mAdapter = new ArrayAdapter<>(this.getContext(), R.layout.enter_competitor_list_element, R.id.comp_name_list_tv, mCompetitors);
 		mListView.setAdapter(mAdapter);
+
+		if (mCompetitors.size() == 0) {										//onCreate runs first, and initializes mCompetitors.
+			mNumberCompetitors.setText("(No competitors)");
+		} else {
+			mNumberCompetitors.setText("(" + mCompetitors.size() + " competitors)");
+		}
 
 		return view;
 
@@ -128,22 +142,43 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 
 		switch (view.getId()) {
 			case R.id.save_competitor_name_button: {
-				//save
-
+				//save competitor name
 				String name = mNameET.getText().toString();
+				//Verify name is unique
+				if (duplicateName(name)) {
+					Toast.makeText(this.getContext(), "You already have a competitor called " + name, Toast.LENGTH_LONG).show();
+					return;
+				}
 				Competitor competitor = new Competitor(name);
-				competitors.add(competitor);
+				mCompetitors.add(competitor);
+				mNameET.setText("");   //clear
 				mAdapter.notifyDataSetChanged();
+
+				mNumberCompetitors.setText("(" + mCompetitors.size() + " competitors)");
+
 				break;
+
 			}
 
 			case R.id.save_competitors_button: {
-				mListener.onCompetitorListCreated(competitors);
+				mListener.onCompetitorListCreated(mCompetitors);
 				break;
 			}
 
 		}
 
+
+	}
+
+	private boolean duplicateName(String name) {
+
+		for (Competitor c : mCompetitors) {
+			if (name.equals(c.name)) {
+				return true;
+			}
+		}
+
+		return false;
 
 	}
 

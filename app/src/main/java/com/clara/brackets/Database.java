@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * SQLite interaction.  Save competitor list, and current status of tournament
+ * SQLite interaction.  Save competitor list, and current status of tournament bracket
  *
  */
 
@@ -31,11 +31,12 @@ public class Database {
 	private final String COMPETITOR_NAME = "name";
 
 
-	private final String RESULTS_TABLE = "results";
+	private final String MATCHES_TABLE = "matches";
 	private final String RESULT_ID = "_id";
 	private final String COMP_1_ID = "competitor_1_id";
 	private final String COMP_2_ID = "competitor_2_id";
 	private final String WINNER_ID = "winner_id";
+	private final String NODE_ID = "node_id";      //node in Bracket tree
 	private final String MATCH_DATE = "match_date";
 
 
@@ -79,13 +80,13 @@ public class Database {
 
 
 			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + RESULTS_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
 
 			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT UNIQUE )";  //todo check SQL
 			String createCompetitorsSQL = String.format(createCompetitorsBase, COMPETITORS_TABLE, COMP_ID, COMPETITOR_NAME);
 
-			String createResultsBase = "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER )";
-			String createResultsSQL = String.format(createResultsBase, RESULTS_TABLE, RESULT_ID, COMP_1_ID, COMP_2_ID, WINNER_ID, MATCH_DATE);
+			String createResultsBase = "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER )";
+			String createResultsSQL = String.format(createResultsBase, MATCHES_TABLE, RESULT_ID, COMP_1_ID, COMP_2_ID, WINNER_ID, MATCH_DATE, NODE_ID);
 
 
 			Log.d(SQL_TAG, createCompetitorsSQL);
@@ -100,7 +101,7 @@ public class Database {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);
-			db.execSQL("DROP TABLE IF EXISTS " + RESULTS_TABLE);
+			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
 
 			onCreate(db);
 			Log.w(SQL_TAG, "Upgrade table - drop and recreate it");

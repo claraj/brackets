@@ -1,22 +1,26 @@
 package com.clara.brackets;
 
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements
+		EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener,
+		LevelOfBracketFragment.OnMatchResult {
 
 	ArrayList<Competitor> mCompetitors;
 
 	EnterCompetitorsFragment enterCompetitorsFragment;
-	ShowResultsFragment showResultsFragment;
+	//Not_needed_ShowResultsFragment showResultsFragment;
 	EnterResultsFragment enterResultsFragment;
 
-	Database mDatabase;
+	BracketManager manager;
+
+	private final String TAG = "MAIN ACTIVITY";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,15 +31,17 @@ public class MainActivity extends AppCompatActivity implements EnterCompetitorsF
 
 		//Otherwise, show the EnterCompetitorsFragment
 
-		mDatabase = new Database(this);
+		manager = new BracketManager(this);
 
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
 		if (isCompetitionInProgress()) {
-			showResultsFragment = ShowResultsFragment.newInstance();   //todo provide results (?)
-			transaction.add(R.id.content, showResultsFragment);
+
+			manager.setCompetitors(mockCompetitors(14));
+			enterResultsFragment = EnterResultsFragment.newInstance(manager.createBracket());   //todo provide results (?)
+			transaction.add(R.id.content, enterResultsFragment);
 		} else {
-			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(null);
+			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(14));
 			transaction.add(R.id.content, enterCompetitorsFragment);
 		}
 
@@ -48,24 +54,49 @@ public class MainActivity extends AppCompatActivity implements EnterCompetitorsF
 	private boolean isCompetitionInProgress() {
 
 		//todo how to check?
-		return false;
+		return true;
+
 	}
+
+
+	private ArrayList<Competitor> mockCompetitors(int num) {
+
+		char name = 65;
+		ArrayList<Competitor> mock = new ArrayList<>();
+		for (int x = 0 ; x < num ; x++) {
+			Competitor c = new Competitor(name++ + "");
+			mock.add(c);
+		}
+
+		return mock;
+	}
+
 
 	@Override
 	public void onCompetitorListCreated(ArrayList<Competitor> competitors) {
 
 		mCompetitors = competitors;
-		mDatabase.saveCompetitors(mCompetitors);
+		manager.saveCompetitors(mCompetitors);
 
 		//show enter results screen
 
-		enterResultsFragment = EnterResultsFragment.newInstance();
+		Bracket bracket = manager.createBracket();
+
+		manager.saveMatches();
+
+		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
+
+		Toast.makeText(this, "Should show results fragment", Toast.LENGTH_LONG).show();
 
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.content, enterResultsFragment);
 		transaction.commit();
 
 
+	}
 
+	@Override
+	public void onResultOfMatch(Match match) {
+		Log.d(TAG, "Match result from fragment " + match);
 	}
 }

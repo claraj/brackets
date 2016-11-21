@@ -71,7 +71,7 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 		//If winner known, change text to winner color; change loser color
 
-		if (match.winner != null && match.winner == match.comp_1) {
+		if (match.winner != null && match.winner.id == match.comp_1.id) {
 
 			Log.d(TAG, " winner is comp_1");
 
@@ -81,7 +81,7 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 		}
 
-		if (match.winner != null && match.winner == match.comp_2) {
+		if (match.winner != null && match.winner.id == match.comp_2.id) {
 
 			Log.d(TAG, "winner is comp_2");
 

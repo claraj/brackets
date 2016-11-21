@@ -50,6 +50,9 @@ public class Bracket implements Parcelable {
 		return levels;
 	}
 
+	public long getRootDB_ID() {
+		return root.db_id;
+	}
 
 
 	//Traverse the tree. If a Match (node) is at the desired level, add it to a list.
@@ -129,6 +132,13 @@ public class Bracket implements Parcelable {
 		if (node.rightChild != null) {
 			print(node.rightChild);
 		}
+
+	}
+
+
+	public void placeMatch(Match match) {
+
+		root.placeMatchInTree(match);
 
 	}
 

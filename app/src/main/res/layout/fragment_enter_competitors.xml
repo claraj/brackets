@@ -37,7 +37,7 @@
 
     <Button
         android:id="@+id/save_competitors_button"
-        android:text="@string/save_competitors"
+        android:text="@string/save_competitors_and_start_tournament"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

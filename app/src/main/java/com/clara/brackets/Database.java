@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * SQLite interaction.  Save competitor list, and current status of tournament bracket
@@ -27,8 +28,8 @@ public class Database {
 	private  static final int DB_VERSION = 1;
 
 
-	//Two tables: one for competitors
-	//one for results of a particular matchup
+	//Two tables: one for Competitors
+	//one for results of a particular Match
 
 	private final String COMPETITORS_TABLE = "competitors";
 	private final String COMP_ID = "_id";
@@ -59,25 +60,25 @@ public class Database {
 
 */
 
-	private final String MATCHES_TABLE = "matches";
-	private final String MATCH_ID = "_id";   //primary key
+	 static final String MATCHES_TABLE = "matches";
+	static final String MATCH_ID = "_id";   //primary key
 
-	private final String COMP_1_ID = "competitor_1_id";
-	private final String COMP_1_IS_BYE = "competitor_1_is_bye";
+	static final String COMP_1_ID = "competitor_1_id";
+	static final String COMP_1_IS_BYE = "competitor_1_is_bye";
 
-	private final String COMP_2_ID = "competitor_2_id";
-	private final String COMP_2_IS_BYE = "competitor_2_is_bye";
+	static final String COMP_2_ID = "competitor_2_id";
+	static final String COMP_2_IS_BYE = "competitor_2_is_bye";
 
-	private final String WINNER_ID = "winner_id";
+	static final String WINNER_ID = "winner_id";
 
-	private final String LEVEL = "tree_level";
-	private final String NODE_ID = "node_id";      //node in Bracket tree
-	private final String MATCH_DATE = "match_date";
+	static final String LEVEL = "tree_level";
+	static final String NODE_ID = "node_id";      //node in Bracket tree
+	static final String MATCH_DATE = "match_date";
 
-	private final String LEFT_CHILD_ID = "left_child_id";
-	private final String RIGHT_CHILD_ID = "right_child_id";
+//	static final String LEFT_CHILD_ID = "left_child_id";
+//	static final String RIGHT_CHILD_ID = "right_child_id";
 
-	private final String IS_LEFT_CHILD = "is_left_child";
+//	static final String IS_LEFT_CHILD = "is_left_child";
 
 	public Database(Context c) {
 		this.context = c;
@@ -85,249 +86,26 @@ public class Database {
 		this.db = helper.getWritableDatabase();
 	}
 
-	public void close() {
+	void close() {
 		helper.close(); //Closes the database - very important!
 	}
 
+	/** Insert competitors, read competitors */
+
 	public void saveNewCompetitors(ArrayList<Competitor> competitors) {
+
+		Log.d(TAG, "About to save this to DB: " + competitors);
 
 		for (Competitor c : competitors)  {
 
-			ContentValues newCompetitor = new ContentValues();
-			newCompetitor.put(COMPETITOR_NAME, c.name);
-			long pk = db.insertOrThrow(COMPETITORS_TABLE, null, newCompetitor);
+			ContentValues newCompetitorValues = new ContentValues();
+			newCompetitorValues.put(COMPETITOR_NAME, c.name);
+			newCompetitorValues.put(COMP_IS_BYE, c.bye);
+			long pk = db.insertOrThrow(COMPETITORS_TABLE, null, newCompetitorValues);
 			c.id = pk;
-
 		}
 
-
-
-	}
-
-	public void saveMatchCreateID(Match match) {
-
-		ContentValues values = new ContentValues();
-
-		if (match.comp_1 != null) {
-			values.put(COMP_1_ID, match.comp_1.id);
-		} else {
-			values.put(COMP_1_ID, -1);   //no competitor
-		}
-
-		if (match.comp_1 != null && match.comp_1.bye) {
-			values.put(COMP_1_IS_BYE, true);
-		} else {
-			values.put(COMP_1_IS_BYE, false);
-		}
-
-		//	Competitor comp_2;  (save id), and if bye or not
-
-		if (match.comp_2 != null) {
-			values.put(COMP_2_ID, match.comp_2.id);
-		} else {
-			values.put(COMP_2_ID, -1);   //no competitor
-		}
-
-		if (match.comp_2 != null && match.comp_2.bye) {
-			values.put(COMP_2_IS_BYE, true);
-		} else {
-			values.put(COMP_2_IS_BYE, false);     //byes still have id numbers.
-		}
-
-
-		// Competitor winner;  (save id)
-
-		if (match.winner != null) {
-			values.put(WINNER_ID, match.winner.id);
-		} else {
-			values.put(WINNER_ID, -1);   //no winner yet
-		}
-
-
-		//	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
-
-		values.put(LEVEL, match.level);
-
-		//			Date matchDate;
-
-		if (match.matchDate != null)  {
-			values.put(MATCH_DATE, match.matchDate.getTime());
-		} else {
-			values.put(MATCH_DATE, -1);
-		}
-
-
-		//	boolean isLeftChild;
-
-		// 0 is false and 1 is true
-
-		if (match.isLeftChild) {
-			values.put(IS_LEFT_CHILD, 1);
-		} else {
-			values.put(IS_LEFT_CHILD, 0);
-		}
-
-		//	int nodeId;
-
-
-		values.put(NODE_ID, match.nodeId);
-
-
-		long id = db.insert(MATCHES_TABLE, null, values);
-
-		match.db_id = id;
-
-
-
-	}
-
-	public void updateBracketMatches(ArrayList<Match> matches) {
-
-		for (Match match : matches) {
-
-			ContentValues values = new ContentValues();
-
-//			Competitor comp_1;  (save id)
-
-			if (match.comp_1 != null) {
-				values.put(COMP_1_ID, match.comp_1.id);
-			} else {
-				values.put(COMP_1_ID, -1);   //no competitor
-			}
-
-			// 0 is false and 1 is true
-
-			if (match.comp_1 != null && match.comp_1.bye) {
-				values.put(COMP_1_IS_BYE, 1);
-			} else {
-				values.put(COMP_1_IS_BYE, 0);
-			}
-
-
-			//	Competitor comp_2;  (save id), and if bye or not
-
-
-			if (match.comp_2 != null) {
-				values.put(COMP_2_ID, match.comp_2.id);
-			} else {
-				values.put(COMP_2_ID, -1);   //no competitor
-			}
-
-			// 0 is false and 1 is true
-
-			if (match.comp_2 != null && match.comp_2.bye) {
-				values.put(COMP_2_IS_BYE, 1);
-			} else {
-				values.put(COMP_2_IS_BYE, 0);     //byes still have id numbers.
-			}
-
-
-			// Competitor winner;  (save id)
-
-			if (match.winner != null) {
-				values.put(WINNER_ID, match.winner.id);
-			} else {
-				values.put(WINNER_ID, -1);   //no winner yet
-			}
-
-
-			//	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
-
-			values.put(LEVEL, match.level);
-
-			//			Date matchDate;
-
-			if (match.matchDate != null)  {
-				values.put(MATCH_DATE, match.matchDate.getTime());
-			} else {
-				values.put(MATCH_DATE, -1);
-			}
-
-			//	Match leftChild; (save id)
-
-			if (match.leftChild != null) {
-				values.put(LEFT_CHILD_ID, match.leftChild.db_id);
-			} else {
-				values.put(LEFT_CHILD_ID, -1);   //no left child
-			}
-
-
-			//Match rightChild; (save id)
-
-			if (match.rightChild != null) {
-				values.put(RIGHT_CHILD_ID, match.rightChild.db_id);
-			} else {
-				values.put(RIGHT_CHILD_ID, -1);   //no left child
-			}
-
-
-			//			Match parent; (save id)   (?)
-
-
-			//			boolean isLeftChild;
-
-			// 0 is false and 1 is true
-
-			if (match.isLeftChild) {
-				values.put(IS_LEFT_CHILD, 1);
-			} else {
-				values.put(IS_LEFT_CHILD, 0);
-			}
-
-			//			int nodeId;
-
-
-			values.put(NODE_ID, match.nodeId);
-
-
-			String where = MATCH_ID + " = " + match.db_id;
-
-			db.update(MATCHES_TABLE, values, where, null);
-
-		}
-
-	}
-
-
-	public void allData() {
-
-		Cursor c = db.query(MATCHES_TABLE, null, null, null, null, null, null); //select * from match table
-
-		while (c.moveToNext()) {
-
-	/* MATCH_ID, COMP_1_ID, COMP_1_IS_BYE, COMP_2_ID, COMP_2_IS_BYE,
-	WINNER_ID, LEVEL, NODE_ID, MATCH_DATE, LEFT_CHILD_ID, RIGHT_CHILD_ID, IS_LEFT_CHILD);
-*/
-			String output = "";
-			output += MATCH_ID + c.getInt(0) + " - ";
-			output += COMP_1_ID + c.getInt(1) + " - ";
-			output += COMP_1_IS_BYE + c.getInt(2) + " - ";
-			output += COMP_2_ID + c.getInt(3) + " - ";
-			output += COMP_2_IS_BYE + c.getInt(4) + " - ";
-			output += WINNER_ID + c.getInt(5) + " - ";
-			output += LEVEL + c.getInt(6) + " - ";
-			output += NODE_ID + c.getInt(7) + " - ";
-			output += MATCH_DATE + c.getLong(8) + " - ";
-			output += LEFT_CHILD_ID + c.getInt(9) + " - ";
-			output += RIGHT_CHILD_ID + c.getInt(10) + " - ";
-			output += IS_LEFT_CHILD + c.getInt(11);
-
-			Log.d(TAG, output);
-
-		}
-
-		c.close();
-
-	}
-
-
-
-	public ArrayList<Match> getAllMatchesForBracket() {
-
-		return null;    //todo
-
-		//populate comp_1 and comp_2 with database queries
-
+		Log.d(TAG, "Saved this to DB: " + competitors);
 	}
 
 	public ArrayList<Competitor> readCompetitors() {
@@ -347,12 +125,10 @@ public class Database {
 			int bye = cursor.getInt(2);
 			// 0 is false and 1 is true
 
-			boolean isBye = (bye == 1 ) ? true : false;
+			boolean isBye = (bye == 1);   //if bye == 1 then isBye should be true.
 
 			Competitor comp = new Competitor(name, id, isBye);
-
 			competitors.add(comp);
-
 		}
 
 		cursor.close();
@@ -360,6 +136,143 @@ public class Database {
 
 
 	}
+
+	/** Matches */
+
+	public void saveMatchCreateID(Match match) {
+
+		ContentValues values = new ContentValues();
+		match.addValues(values);
+		long id = db.insert(MATCHES_TABLE, null, values);
+
+		match.db_id = id;
+
+	}
+
+	public void updateBracketMatches(ArrayList<Match> matches) {
+
+		Log.d(TAG, "Saving these matches: " + matches);
+
+		for (Match match : matches) {
+
+			ContentValues values = new ContentValues();
+			match.addValues(values);
+			String where = MATCH_ID + " = " + match.db_id;
+			db.update(MATCHES_TABLE, values, where, null);
+		}
+
+	}
+
+
+
+	public void allMatchData() {
+
+		Cursor c = db.query(MATCHES_TABLE, null, null, null, null, null, null); //select * from match table
+
+		while (c.moveToNext()) {
+
+	/* MATCH_ID, COMP_1_ID, COMP_1_IS_BYE, COMP_2_ID, COMP_2_IS_BYE,
+	WINNER_ID, LEVEL, NODE_ID, MATCH_DATE, LEFT_CHILD_ID, RIGHT_CHILD_ID, IS_LEFT_CHILD);
+*/
+			String output = "";
+			output += MATCH_ID + c.getInt(0) + " - ";
+			output += COMP_1_ID + c.getInt(1) + " - ";
+			output += COMP_1_IS_BYE + c.getInt(2) + " - ";
+			output += COMP_2_ID + c.getInt(3) + " - ";
+			output += COMP_2_IS_BYE + c.getInt(4) + " - ";
+			output += WINNER_ID + c.getInt(5) + " - ";
+			output += LEVEL + c.getInt(6) + " - ";
+			output += NODE_ID + c.getInt(7) + " - ";
+			output += MATCH_DATE + c.getLong(8) + " - ";
+//			output += LEFT_CHILD_ID + c.getInt(9) + " - ";
+//			output += RIGHT_CHILD_ID + c.getInt(10) + " - ";
+//			output += IS_LEFT_CHILD + c.getInt(11);
+
+			Log.d(TAG, output);
+
+		}
+
+		c.close();
+
+	}
+
+
+	public ArrayList<Match> getAllMatchesForBracket() {
+
+		//populate comp_1 and comp_2 and winner with database queries
+
+		ArrayList<Match> matches = new ArrayList<>();
+
+		Cursor c = db.query(MATCHES_TABLE, null, null, null, null, null, null);
+
+		while (c.moveToNext()) {
+			//make match object
+			//query db to get competitor info
+			Match match = new Match();
+			match.db_id = c.getInt(0);
+
+			int comp_1_id = c.getInt(1);
+			if (comp_1_id != -1) {
+				match.comp_1 = getCompetitorForId(comp_1_id);
+			}
+
+			//ignore col 2, is bye
+
+			int comp_2_id = c.getInt(3);
+			if (comp_2_id != -1) {
+				match.comp_2 = getCompetitorForId(comp_2_id);
+			}
+
+			//ignore col 4, is bye
+
+			int winner_id = c.getInt(5);
+			if (winner_id != -1) {
+				match.winner = getCompetitorForId(winner_id);
+			}
+
+
+			match.level = c.getInt(6);
+			match.nodeId = c.getInt(7);
+			match.matchDate = new Date(c.getLong(8));
+
+
+			matches.add(match);
+
+		}
+
+		c.close();
+
+		return matches;
+
+	}
+
+	public Competitor getCompetitorForId(int pk_id) {
+
+		Log.d(TAG, "Fetch competitor for id = " + pk_id);
+
+		String where = COMP_ID + " = " + pk_id;
+		Cursor cursor = db.query(COMPETITORS_TABLE, null, where, null, null, null, null);
+		if (!cursor.moveToFirst()) {
+			Log.e(TAG, "Result set empty for competitor with pk " + pk_id );
+			return null;
+		}
+
+
+		long id = cursor.getLong(0);
+		String name = cursor.getString(1);
+		int bye = cursor.getInt(2);
+		boolean isBye = (bye == 1);
+
+		Competitor competitor = new Competitor(name, id, isBye);
+
+		cursor.close();
+
+		Log.d(TAG, "Fetched competitor = " + competitor);
+
+		return competitor;
+
+	}
+
 
 
 	public class SQLHelper extends SQLiteOpenHelper {
@@ -373,29 +286,28 @@ public class Database {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 
-			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    //not in real life!!
+			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    //not for real app :)
 			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
 
-			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT UNIQUE, %s TEXT UNIQUE )";  //todo check SQL
+			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT UNIQUE, %s INTEGER )";  //todo check SQL
 			String createCompetitorsSQL = String.format(createCompetitorsBase, COMPETITORS_TABLE, COMP_ID, COMPETITOR_NAME, COMP_IS_BYE);
 
 			String createMatchesBase = "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, " +
 					"%s INTEGER, %s INTEGER, %s INTEGER, %s INTEGER, " +     //comp_1, comp_1 is bye, same for comp 2
 					"%s INTEGER, " +					//winner id
 					"%s INTEGER, %s INTEGER, " +    	//level, node id
-					"%s INTEGER, " +					//match date (as timestamp)
-					"%s INTEGER, %s INTEGER, " +				//left child id, right child id
-					"%s INTEGER " +					//is left child
+					"%s INTEGER " +					//match date (as timestamp)
+//					"%s INTEGER, %s INTEGER, " +		//left child id, right child id
+//					"%s INTEGER " +						//is left child
 					" )";
-			String createMatchesSQL = String.format(createMatchesBase, MATCHES_TABLE, MATCH_ID, COMP_1_ID, COMP_1_IS_BYE, COMP_2_ID, COMP_2_IS_BYE, WINNER_ID, LEVEL, NODE_ID, MATCH_DATE, LEFT_CHILD_ID, RIGHT_CHILD_ID, IS_LEFT_CHILD);
 
+			String createMatchesSQL = String.format(createMatchesBase, MATCHES_TABLE, MATCH_ID, COMP_1_ID, COMP_1_IS_BYE, COMP_2_ID, COMP_2_IS_BYE, WINNER_ID, LEVEL, NODE_ID, MATCH_DATE /*, LEFT_CHILD_ID, RIGHT_CHILD_ID, IS_LEFT_CHILD*/);
 
 			Log.d(SQL_TAG, createCompetitorsSQL);
 			db.execSQL(createCompetitorsSQL);
 
 			Log.d(SQL_TAG, createMatchesBase);
 			db.execSQL(createMatchesSQL);
-
 
 		}
 

@@ -19,7 +19,6 @@ public class MainActivity extends AppCompatActivity implements
 	ArrayList<Competitor> mCompetitors;
 
 	EnterCompetitorsFragment enterCompetitorsFragment;
-	//Not_needed_ShowResultsFragment showResultsFragment;
 	EnterResultsFragment enterResultsFragment;
 
 	BracketManager manager;
@@ -41,17 +40,23 @@ public class MainActivity extends AppCompatActivity implements
 
 		if (isCompetitionInProgress()) {
 
+			Log.d(TAG, "Competition is in progress. Loading data from DB and starting EnterResultsFragment");
+
 			manager.getCompetitorsFromDB();
-			Bracket bracket = manager.createBracket();
+			Bracket bracket = manager.createBracketFromDBAndCompetitors();
+
 			enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 			transaction.add(R.id.content, enterResultsFragment);
 
+
 		} else {
 
-			//create new competitors.
+			Log.d(TAG, "No saved competitors, starting EnterCompetitorsFragment");
 
+			//create new competitors. For testing, create some mock competitors. Replace with null for real app.
 			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(14));
 			transaction.add(R.id.content, enterCompetitorsFragment);
+
 		}
 
 		transaction.commit();
@@ -87,11 +92,13 @@ public class MainActivity extends AppCompatActivity implements
 
 		Log.d(TAG, "Competitors saved: " + mCompetitors);
 
-		//show enter results screen
+		//show EnterResultsFragment screen
 
-		Bracket bracket = manager.createBracket();
+		Bracket bracket = manager.createBracket();  //manager keeps a reference to the Bracket
 
-		manager.saveNewMatchesToDB(bracket);
+		manager.addInitialCompetitors();
+
+		manager.saveNewMatchesToDB();  //
 
 		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 
@@ -101,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements
 		transaction.replace(R.id.content, enterResultsFragment);
 		transaction.commit();
 
+		//Tournament in progress. Save in shared preferences.
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		preferences.edit().putBoolean(TOURNAMENT_IN_PROGRESS, true).apply();
 
@@ -112,6 +120,9 @@ public class MainActivity extends AppCompatActivity implements
 		super.onPause();
 		manager.closeDB();
 	}
+
+
+	//Callback from EnterResultsFragment
 
 	@Override
 	public void matchUpdated(Match match) {

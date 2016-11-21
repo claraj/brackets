@@ -35,7 +35,7 @@ public class Competitor implements Parcelable {
 
 	@Override
 	public String toString() {
-		return name + " id " + id;
+		return name + " id " + id + " is bye? " + bye;
 	}
 
 	protected Competitor(Parcel in) {

@@ -1,41 +1,52 @@
 package com.clara.brackets;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by clara on 11/19/16.  creates bracket, deals with database updates.
+ * Created by clara on 11/19/16.
+ * Creates bracket, deals with database interaction and updates.
  */
 
 public class BracketManager {
 
 	private static final String TAG = "BRACKET MANAGER";
+	private static final String ROOT_DB_ID = "root node match ID";
 	private Database database;
 
-	ArrayList<Competitor> mCompetitors;
+	Bracket mBracket;
+
+	private ArrayList<Competitor> mCompetitors;
+
+	private Context context;
 
 	BracketManager(Context context) {
-
 		database = new Database(context);
-
+		this.context = context;
 	}
+
 
 	void saveCompetitors(ArrayList<Competitor> competitors) {
 		mCompetitors = competitors;
 		database.saveNewCompetitors(competitors);
-
 		Log.d(TAG, "Competitors saved with primary key values:" + competitors);
-
 	}
 
+
+	public void getCompetitorsFromDB() {
+		mCompetitors = database.readCompetitors();
+	}
 
 
 	public void setCompetitors(ArrayList<Competitor> competitors) {
 		this.mCompetitors = competitors;
 	}
+
 
 
 	public Bracket createBracket() {
@@ -44,25 +55,104 @@ public class BracketManager {
 
 		Collections.shuffle(mCompetitors);
 		int levels = padCompetitorList();   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
-
-		Log.d(TAG, "levels of tree needed = " + levels);
+		//Log.d(TAG, "levels of tree needed = " + levels);
 
 		Bracket bracket = new Bracket(levels);
 
 		Log.d(TAG, "created Bracket tree ");
-		bracket.logTree();
+		//bracket.logTree();
 
-		bracket.addMatchesAsLeaves(mCompetitors);
+		mBracket = bracket;
+		return bracket;
+	}
+
+
+	 void addInitialCompetitors() {
+
+		mBracket.addMatchesAsLeaves(mCompetitors);
 
 		Log.d(TAG, "Added competitors to Bracket tree ");
-		bracket.logTree();
+		//bracket.logTree();
 
-		bracket.advanceWinners();   //advances byes and winners. Here, should just have the opponents of byes advanced.
+		mBracket.advanceWinners();   //advances byes and winners. Here, should just have the opponents of byes advanced.
 
 		Log.d(TAG, "Advanced byes (competitors without an opponent) for the first round ");
-		bracket.logTree();
+		//bracket.logTree();
 
+		//mBracket = bracket;
+
+		saveAllMatchesToDB();
+
+
+		//return bracket;
+
+	}
+
+
+	public void saveUpdatedMatch(Match match) {
+
+		ArrayList<Match> oneMatch = new ArrayList<>();
+		oneMatch.add(match);
+
+		database.updateBracketMatches(oneMatch);
+
+	}
+
+
+	public void saveAllMatchesToDB() {
+		ArrayList<Match> allMatches = mBracket.getListOfMatches();
+		database.updateBracketMatches(allMatches);
+	}
+
+
+	public void saveNewMatchesToDB() {
+		//todo
+		// does not save child-to-parent links, only parent-to-child
+
+		ArrayList<Match> allMatches = mBracket.getListOfMatches();
+
+		for (Match m : allMatches){
+			database.saveMatchCreateID(m);
+		}
+
+		Log.d(TAG, "List of matches with pk: " + allMatches);
+
+		database.updateBracketMatches(allMatches);
+
+//		rootDbId = mBracket.getRootDB_ID();
+//
+//		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+//		prefs.edit().putLong(ROOT_DB_ID, rootDbId).apply();
+
+	}
+
+
+
+
+	public Bracket createBracketFromDBAndCompetitors() {
+
+		//create blank bracket from competitors  //todo don't add leaves!?
+		Bracket bracket = createBracket();
+
+		//read Match info from DB
+
+		ArrayList<Match> matches = database.getAllMatchesForBracket();
+
+		//place matches into bracket
+
+		for (Match match : matches) {
+			placeMatchIntoBracket(match);
+		}
+
+		bracket.setParents();
 		return bracket;
+
+	}
+
+
+	private void placeMatchIntoBracket(Match match) {
+
+		mBracket.placeMatch(match);
 
 	}
 
@@ -81,8 +171,6 @@ public class BracketManager {
 		int power = 0;
 
 		while (true) {
-
-
 			if (test == len) {
 				//a power of two
 				Log.d(TAG, "The length of the list is a power of two");
@@ -111,50 +199,6 @@ public class BracketManager {
 		Log.d(TAG, mCompetitors.toString());
 
 		return power;
-
-	}
-
-	public void saveUpdatedMatch(Match match) {
-
-		ArrayList<Match> oneMatch = new ArrayList<>();
-		oneMatch.add(match);
-
-		database.updateBracketMatches(oneMatch);
-
-	}
-
-
-	public void getCompetitorsFromDB() {
-
-		mCompetitors = database.readCompetitors();
-
-	}
-
-
-
-	public void saveNewMatchesToDB(Bracket bracket) {
-		//todo
-		// does not save child-to-parent links, only parent-to-child
-
-		ArrayList<Match> allMatches = bracket.getListOfMatches();
-		for (Match m : allMatches){
-			database.saveMatchCreateID(m);
-		}
-
-
-		Log.d(TAG, "List of matches with pk: " + allMatches);
-
-		database.updateBracketMatches(allMatches);
-
-	}
-
-	public Bracket getCurrentBracketFromDB() {
-		//read Bracket from DB
-
-		ArrayList<Match> matches = database.getAllMatchesForBracket();
-		Bracket bracket = new Bracket(matches);
-		bracket.setParents();
-		return bracket;
 
 	}
 

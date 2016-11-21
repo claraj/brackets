@@ -1,4 +1,4 @@
-package com.clara.brackets;
+package com.clara.brackets.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,9 +9,10 @@ import java.util.ArrayList;
 
 /**
  * Created by Clara on 11/19/16.
- * A Bracket is a full tree structure
- * Each node is a Match element (all nodes have 2 children, except the leaves, which have none)
- * storing all of the Matches for this tournament.
+ *
+ * A Bracket is a tree structure, with all levels full.
+ * Each node is a Match element. All nodes have 2 children, except the leaves, which have none.
+ * A Bracket stores all of the Matches for this tournament.
  */
 
 public class Bracket implements Parcelable {
@@ -29,7 +30,7 @@ public class Bracket implements Parcelable {
 	// nodes should be numbered, with a unique number
 	// each node should have the correct level assigned. The leave nodes are level 0; the root is (number of levels - 1)
 
-	Bracket(int levels) {
+	public Bracket(int levels) {
 
 		this.levels = levels;
 
@@ -45,7 +46,6 @@ public class Bracket implements Parcelable {
 		root.setParents();
 	}
 
-
 	public int getLevels() {
 		return levels;
 	}
@@ -56,7 +56,7 @@ public class Bracket implements Parcelable {
 
 
 	//Traverse the tree. If a Match (node) is at the desired level, add it to a list.
-	ArrayList<Match> allMatchesAtLevel(int level) {
+	public ArrayList<Match> allMatchesAtLevel(int level) {
 
 		ArrayList<Match> matches = new ArrayList<>();
 		addLevelMatchToResults(level, root, matches);
@@ -65,7 +65,7 @@ public class Bracket implements Parcelable {
 	}
 
 	//Companion method to the above. Checks a node for being at a particular level, then calls this method on any non-null children.
-	private void addLevelMatchToResults(int level, Match node, ArrayList<Match> matchesList) {
+	public void addLevelMatchToResults(int level, Match node, ArrayList<Match> matchesList) {
 
 		if (node == null) {
 			return;
@@ -84,7 +84,7 @@ public class Bracket implements Parcelable {
 
 
 	//Useful for the initial empty, start tree. Assign one competitor to each leaf node.
-	void addMatchesAsLeaves(ArrayList<Competitor> competitors) {
+	public void addMatchesAsLeaves(ArrayList<Competitor> competitors) {
 		int leaves = (int) Math.pow(2, levels);
 		if (competitors.size() != leaves) {
 			Log.e(TAG, "Wrong number of competitors for tree, need " + leaves + " but got " + competitors.size());
@@ -95,7 +95,7 @@ public class Bracket implements Parcelable {
 
 
 
-	ArrayList<Match> getListOfMatches() {
+	public ArrayList<Match> getListOfMatches() {
 		//TODO traverse tree; output a list of nodes for saving to the database
 
 		ArrayList<Match> matches = new ArrayList<>();
@@ -184,6 +184,10 @@ public class Bracket implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
+
+
+
 	}
+
 
 }

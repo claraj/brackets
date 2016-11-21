@@ -1,4 +1,4 @@
-package com.clara.brackets;
+package com.clara.brackets.ui;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,6 +8,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.clara.brackets.BracketManager;
+import com.clara.brackets.R;
+import com.clara.brackets.data.Bracket;
+import com.clara.brackets.data.Competitor;
+import com.clara.brackets.data.Match;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -16,7 +22,6 @@ public class MainActivity extends AppCompatActivity implements
 {
 
 	private static final String TOURNAMENT_IN_PROGRESS = "is tournament in progress?";
-	ArrayList<Competitor> mCompetitors;
 
 	EnterCompetitorsFragment enterCompetitorsFragment;
 	EnterResultsFragment enterResultsFragment;
@@ -42,8 +47,7 @@ public class MainActivity extends AppCompatActivity implements
 
 			Log.d(TAG, "Competition is in progress. Loading data from DB and starting EnterResultsFragment");
 
-			manager.getCompetitorsFromDB();
-			Bracket bracket = manager.createBracketFromDBAndCompetitors();
+			Bracket bracket = manager.createBracketFromDB();
 
 			enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 			transaction.add(R.id.content, enterResultsFragment);
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
 			Log.d(TAG, "No saved competitors, starting EnterCompetitorsFragment");
 
 			//create new competitors. For testing, create some mock competitors. Replace with null for real app.
-			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(14));
+			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(13));
 			transaction.add(R.id.content, enterCompetitorsFragment);
 
 		}
@@ -87,18 +91,10 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
 	public void onCompetitorListCreated(ArrayList<Competitor> competitors) {
 
-		mCompetitors = competitors;
-		manager.saveCompetitors(mCompetitors);    //this should create a pk_id for each competitor
+		Log.d(TAG, "Competitors to be saved: " + competitors);
 
-		Log.d(TAG, "Competitors saved: " + mCompetitors);
-
-		//show EnterResultsFragment screen
-
-		Bracket bracket = manager.createBracket();  //manager keeps a reference to the Bracket
-
-		manager.addInitialCompetitors();
-
-		manager.saveNewMatchesToDB();  //
+		manager.setCompetitors(competitors);
+		Bracket bracket = manager.createEmptyBracket();  //manager keeps a reference to the Bracket
 
 		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 

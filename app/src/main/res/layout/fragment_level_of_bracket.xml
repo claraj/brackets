@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.clara.brackets.LevelOfBracketFragment">
+    tools:context="com.clara.brackets.ui.LevelOfBracketFragment">
 
     <TextView
         android:id="@+id/level_tv"

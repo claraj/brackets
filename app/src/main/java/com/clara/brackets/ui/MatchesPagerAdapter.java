@@ -1,9 +1,12 @@
-package com.clara.brackets;
+package com.clara.brackets.ui;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.Log;
+
+import com.clara.brackets.data.Bracket;
+import com.clara.brackets.data.Match;
 
 import java.util.ArrayList;
 

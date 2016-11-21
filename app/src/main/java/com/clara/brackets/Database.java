@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.clara.brackets.data.Competitor;
+import com.clara.brackets.data.Match;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -31,10 +34,10 @@ public class Database {
 	//Two tables: one for Competitors
 	//one for results of a particular Match
 
-	private final String COMPETITORS_TABLE = "competitors";
-	private final String COMP_ID = "_id";
-	private final String COMPETITOR_NAME = "name";
-	private final String COMP_IS_BYE = "is_bye";
+	public final String COMPETITORS_TABLE = "competitors";
+	public final String COMP_ID = "_id";
+	public final String COMPETITOR_NAME = "name";
+	public final String COMP_IS_BYE = "is_bye";
 
 
 	/*
@@ -60,20 +63,20 @@ public class Database {
 
 */
 
-	 static final String MATCHES_TABLE = "matches";
-	static final String MATCH_ID = "_id";   //primary key
+	public static final String MATCHES_TABLE = "matches";
+	public static final String MATCH_ID = "_id";   //primary key
 
-	static final String COMP_1_ID = "competitor_1_id";
-	static final String COMP_1_IS_BYE = "competitor_1_is_bye";
+	public	static final String COMP_1_ID = "competitor_1_id";
+	public static final String COMP_1_IS_BYE = "competitor_1_is_bye";
 
-	static final String COMP_2_ID = "competitor_2_id";
-	static final String COMP_2_IS_BYE = "competitor_2_is_bye";
+	public static final String COMP_2_ID = "competitor_2_id";
+	public 	static final String COMP_2_IS_BYE = "competitor_2_is_bye";
 
-	static final String WINNER_ID = "winner_id";
+	public	static final String WINNER_ID = "winner_id";
 
-	static final String LEVEL = "tree_level";
-	static final String NODE_ID = "node_id";      //node in Bracket tree
-	static final String MATCH_DATE = "match_date";
+	public	static final String LEVEL = "tree_level";
+	public static final String NODE_ID = "node_id";      //node in Bracket tree
+	public static final String MATCH_DATE = "match_date";
 
 //	static final String LEFT_CHILD_ID = "left_child_id";
 //	static final String RIGHT_CHILD_ID = "right_child_id";
@@ -289,7 +292,7 @@ public class Database {
 			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    //not for real app :)
 			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
 
-			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT UNIQUE, %s INTEGER )";  //todo check SQL
+			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT , %s INTEGER )";  //todo check SQL
 			String createCompetitorsSQL = String.format(createCompetitorsBase, COMPETITORS_TABLE, COMP_ID, COMPETITOR_NAME, COMP_IS_BYE);
 
 			String createMatchesBase = "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, " +

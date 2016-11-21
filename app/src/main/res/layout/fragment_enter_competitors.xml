@@ -2,7 +2,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.clara.brackets.EnterCompetitorsFragment">
+             tools:context="com.clara.brackets.ui.EnterCompetitorsFragment">
 
 
     <TextView
@@ -17,14 +17,14 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/enter_competitor_name"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:text="# competitors"/>
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:id="@+id/new_competitor_name_et"
         android:layout_below="@id/enter_competitor_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:hint="@string/competitor_name"/>
 
     <Button
         android:id="@+id/save_competitor_name_button"

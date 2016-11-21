@@ -1,4 +1,4 @@
-package com.clara.brackets;
+package com.clara.brackets.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,10 +11,10 @@ public class Competitor implements Parcelable {
 
 	static final String BYE = "* BYE *";
 
-	String name;
-	long id;        //from database.
+	public String name;
+	public long id;        //from database.
 
-	boolean bye;   // Does this represent a bye - the other competitor automatically wins?
+	public boolean bye;   // Does this represent a bye - the other competitor automatically wins?
 
 	public Competitor(String name) {
 		this.name = name;

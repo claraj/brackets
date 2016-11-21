@@ -1,7 +1,6 @@
-package com.clara.brackets;
+package com.clara.brackets.ui;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,7 +14,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.clara.brackets.R;
+import com.clara.brackets.data.Competitor;
 
 import java.util.ArrayList;
 
@@ -96,7 +96,7 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		mNameET = (EditText) view.findViewById(R.id.new_competitor_name_et);
 		mListView = (ListView) view.findViewById(R.id.current_competitors_list);
 
-		mAdapter = new ArrayAdapter<>(this.getContext(), R.layout.enter_competitor_list_element, R.id.comp_name_list_tv, mCompetitors);
+		mAdapter = new ArrayAdapter<Competitor>(this.getContext(), R.layout.enter_competitor_list_element, R.id.comp_name_list_tv, mCompetitors);
 		mListView.setAdapter(mAdapter);
 
 		if (mCompetitors.size() == 0) {										//onCreate runs first, and initializes mCompetitors.

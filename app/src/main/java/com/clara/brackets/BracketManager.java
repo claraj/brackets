@@ -1,9 +1,11 @@
 package com.clara.brackets;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.clara.brackets.data.Bracket;
+import com.clara.brackets.data.Competitor;
+import com.clara.brackets.data.Match;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,9 +25,10 @@ public class BracketManager {
 
 	private ArrayList<Competitor> mCompetitors;
 
+
 	private Context context;
 
-	BracketManager(Context context) {
+	public BracketManager(Context context) {
 		database = new Database(context);
 		this.context = context;
 	}
@@ -48,15 +51,11 @@ public class BracketManager {
 	}
 
 
-
-	public Bracket createBracket() {
+	public Bracket createEmptyBracket() {
 
 		//list should have power of two elements. Make tree of appropriate height, set each match leaf to pairs of competitor.
 
-		Collections.shuffle(mCompetitors);
-		int levels = padCompetitorList();   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
-		//Log.d(TAG, "levels of tree needed = " + levels);
-
+		int levels = getNumberOfLevels();
 		Bracket bracket = new Bracket(levels);
 
 		Log.d(TAG, "created Bracket tree ");
@@ -67,9 +66,26 @@ public class BracketManager {
 	}
 
 
-	 void addInitialCompetitors() {
+	private int getNumberOfLevels() {
+		int competitors = mCompetitors.size();
+		int levels = (int) (Math.log(competitors) / Math.log(2)) ;
+		Log.d(TAG, "Maths .... levels for size " + competitors + " is " + levels);
+		return levels;
 
-		mBracket.addMatchesAsLeaves(mCompetitors);
+	}
+
+	void addInitialCompetitors(ArrayList<Competitor> competitors) {
+
+		mCompetitors = competitors;
+
+		 Collections.shuffle(mCompetitors);
+
+		 padCompetitorList();   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
+		 //Log.d(TAG, "levels of tree needed = " + levels);
+
+		 saveCompetitors(mCompetitors);
+
+		 mBracket.addMatchesAsLeaves(mCompetitors);
 
 		Log.d(TAG, "Added competitors to Bracket tree ");
 		//bracket.logTree();
@@ -79,12 +95,8 @@ public class BracketManager {
 		Log.d(TAG, "Advanced byes (competitors without an opponent) for the first round ");
 		//bracket.logTree();
 
-		//mBracket = bracket;
+		saveNewMatchesToDB();
 
-		saveAllMatchesToDB();
-
-
-		//return bracket;
 
 	}
 
@@ -100,13 +112,16 @@ public class BracketManager {
 
 
 	public void saveAllMatchesToDB() {
+
 		ArrayList<Match> allMatches = mBracket.getListOfMatches();
+
+		Log.d(TAG, "All matches to be saved to DB");
 		database.updateBracketMatches(allMatches);
 	}
 
 
 	public void saveNewMatchesToDB() {
-		//todo
+
 		// does not save child-to-parent links, only parent-to-child
 
 		ArrayList<Match> allMatches = mBracket.getListOfMatches();
@@ -119,23 +134,17 @@ public class BracketManager {
 
 		database.updateBracketMatches(allMatches);
 
-//		rootDbId = mBracket.getRootDB_ID();
-//
-//		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//		prefs.edit().putLong(ROOT_DB_ID, rootDbId).apply();
-
 	}
 
 
+	public Bracket createBracketFromDB() {
 
+		getCompetitorsFromDB();
 
-	public Bracket createBracketFromDBAndCompetitors() {
-
-		//create blank bracket from competitors  //todo don't add leaves!?
-		Bracket bracket = createBracket();
+		//create blank bracket from competitors. Don't add leaves
+		Bracket bracket = createEmptyBracket();
 
 		//read Match info from DB
-
 		ArrayList<Match> matches = database.getAllMatchesForBracket();
 
 		//place matches into bracket
@@ -151,7 +160,6 @@ public class BracketManager {
 
 
 	private void placeMatchIntoBracket(Match match) {
-
 		mBracket.placeMatch(match);
 
 	}
@@ -196,11 +204,12 @@ public class BracketManager {
 			insertPosition+=2;
 		}
 
-		Log.d(TAG, mCompetitors.toString());
+		Log.d(TAG, "After padding, the list of competitors is " + mCompetitors.toString());
 
 		return power;
 
 	}
+
 
 
 	public void closeDB() {

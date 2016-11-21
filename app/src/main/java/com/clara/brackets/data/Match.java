@@ -1,9 +1,10 @@
-package com.clara.brackets;
+package com.clara.brackets.data;
 
 import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
+
+import com.clara.brackets.Database;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,32 +19,32 @@ public class Match implements Parcelable {
 
 	private static final String TAG = "MATCH";
 
-	long db_id;   //primary key from the database
+	public long db_id;   //primary key from the database
 
-	Competitor comp_1;
-	Competitor comp_2;
-	Competitor winner;
+	public Competitor comp_1;
+	public Competitor comp_2;
+	public Competitor winner;
 
-	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
+	public int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
 
-	Date matchDate;
+	public Date matchDate;
 
-	Match leftChild;
-	Match rightChild;
+	public Match leftChild;
+	public Match rightChild;
 
-	Match parent;
+	public Match parent;
 
-	boolean isLeftChild;
+	public boolean isLeftChild;
 
-	int nodeId;
+	public int nodeId;
 
-	Match(int level, boolean isLeftChild) {
+	public Match(int level, boolean isLeftChild) {
 		this.level = level;
 		this.isLeftChild = isLeftChild;
 
 	}
 
-	Match() {}  // used by DB
+	public Match() {}  // used by DB
 
 
 	void addEmptyChildren() {

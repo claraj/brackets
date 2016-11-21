@@ -1,4 +1,4 @@
-package com.clara.brackets;
+package com.clara.brackets.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +10,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.clara.brackets.R;
+import com.clara.brackets.data.Match;
+import com.clara.brackets.ui.MatchesListAdapter;
 
 import java.util.ArrayList;
 

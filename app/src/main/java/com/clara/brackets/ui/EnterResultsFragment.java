@@ -1,4 +1,4 @@
-package com.clara.brackets;
+package com.clara.brackets.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.clara.brackets.R;
+import com.clara.brackets.data.Bracket;
+import com.clara.brackets.data.Match;
 
 import java.util.Date;
 
@@ -40,7 +44,7 @@ public class EnterResultsFragment extends Fragment  implements EnterMatchResultD
 //	 * Use this factory method to create a new instance of
 //	 * this fragment using the provided parameters.
 //	 *
-//	 * @param bracket the Bracket.
+//	 * @param param1 Parameter 1.
 //	 * @return A new instance of fragment EnterResultsFragment.
 //	 */
 

@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
 			Log.d(TAG, "No saved competitors, starting EnterCompetitorsFragment");
 
 			//create new competitors. For testing, create some mock competitors. Replace with null for real app.
-			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(13));
+			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(6));
 			transaction.add(R.id.content, enterCompetitorsFragment);
 
 		}
@@ -93,8 +93,8 @@ public class MainActivity extends AppCompatActivity implements
 
 		Log.d(TAG, "Competitors to be saved: " + competitors);
 
-		manager.setCompetitors(competitors);
-		Bracket bracket = manager.createEmptyBracket();  //manager keeps a reference to the Bracket
+		//manager.setCompetitors();
+		Bracket bracket = manager.createBracket(competitors);  //manager keeps a reference to the Bracket
 
 		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 

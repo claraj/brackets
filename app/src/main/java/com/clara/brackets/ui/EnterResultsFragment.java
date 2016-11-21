@@ -115,7 +115,7 @@ public class EnterResultsFragment extends Fragment  implements EnterMatchResultD
 
 		match.matchDate = new Date();
 
-		mBracket.updateMatchWinnerAndDate(match);
+		mBracket.updateMatch(match);
 		mBracket.advanceWinners();
 		pagerAdapter.setBracket(mBracket);
 

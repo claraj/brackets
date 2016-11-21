@@ -6,7 +6,6 @@ import android.os.Parcelable;
 
 import com.clara.brackets.Database;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -15,218 +14,208 @@ import java.util.Date;
 */
 
 
+//the competitors, winner, is bye or not, comp date.
+
 public class Match implements Parcelable {
 
 	private static final String TAG = "MATCH";
 
-	public long db_id;   //primary key from the database
+	public long db_id;   //primary key from the database (?)
 
 	public Competitor comp_1;
 	public Competitor comp_2;
 	public Competitor winner;
 
-	public int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
+//public int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
 
 	public Date matchDate;
 
-	public Match leftChild;
-	public Match rightChild;
-
-	public Match parent;
-
-	public boolean isLeftChild;
+//	public Match leftChild;
+//	public Match rightChild;
+//
+//	public Match parent;
+//
+//	public boolean isLeftChild;
 
 	public int nodeId;
 
-	public Match(int level, boolean isLeftChild) {
-		this.level = level;
-		this.isLeftChild = isLeftChild;
+//	public Match() {
+//	//	this.level = level;
+//	//	this.isLeftChild = isLeftChild;
+//
+//	}
 
-	}
+
 
 	public Match() {}  // used by DB
 
 
-	void addEmptyChildren() {
-
-		if (level == 0) {
-			return;
-		}
-
-		leftChild = new Match(level - 1, true);
-		leftChild.addEmptyChildren();
-		rightChild = new Match(level - 1, false);
-		rightChild.addEmptyChildren();
-
-	}
-
-
-	static int nodeNumberCounter;
-
-
-	public void addNodeNumbers() {
-
-		this.nodeId = nodeNumberCounter++;
-
-		if (leftChild != null) {
-			leftChild.addNodeNumbers();
-		}
-
-		if (rightChild != null) {
-			rightChild.addNodeNumbers();
-		}
-
-	}
-
-
-	public void setCompetitorsAsLeaves(ArrayList<Competitor> competitors) {
-
-		if (level == 0) {
-			comp_1 = competitors.remove(0);
-			comp_2 = competitors.remove(0);
-		}
-
-		else {
-			leftChild.setCompetitorsAsLeaves(competitors);
-			rightChild.setCompetitorsAsLeaves(competitors);
-		}
-
-
-	}
-
-	//assign parent of each node to be the node id of the parent
-	public void setParents() {
-
-		//find your children and set their parent Match object to you
-
-		if (leftChild != null) {
-			leftChild.parent = this;
-			leftChild.setParents();
-		}
-
-		if (rightChild != null) {
-			rightChild.parent = this;
-			rightChild.setParents();
-		}
-
-	}
-
-
-
-	public void advanceWinningChildren() {
-
-		//If root, return
-
-		if (parent == null) {
-			return;
-		}
-
-		if (comp_1 != null && comp_2 != null && (comp_1.bye || winner == comp_2 )) {
-
-			//comp_2 is winner, advance comp_2 to parentMatch
-
-			winner = comp_2;
-
-			if (isLeftChild) {
-				parent.comp_1 = winner;
-			} else {
-				parent.comp_2 = winner;
-			}
-
-		}
-
-		if (comp_2 != null && comp_1 != null && (comp_2.bye || winner == comp_1)) {
-			//comp_1 is winner, advance comp_1 to parent Match
-			winner = comp_1;
-
-			if (isLeftChild) {
-				parent.comp_1 = winner;
-			} else {
-				parent.comp_2 = winner;
-			}
-		}
-
-
-		if (leftChild != null) {
-			leftChild.advanceWinningChildren();
-		}
-
-		if (rightChild != null) {
-			rightChild.advanceWinningChildren();
-		}
-
-
-	}
-
-
-
-	public void addChildrenToList(ArrayList<Match> matches) {
-
-		if (leftChild != null) {
-			matches.add(leftChild);
-			leftChild.addChildrenToList(matches);
-		}
-
-		if (rightChild != null) {
-			matches.add(rightChild);
-			rightChild.addChildrenToList(matches);
-		}
-
-	}
-
-
-
-	void findAndUpdateMatchWinner(Match matchNode) {
-
-		if (nodeId == matchNode.nodeId) {
-
-			//set winner to whatever matchNode's winner is. TODO Anything else to update?
-
-			winner = matchNode.winner;
-			matchDate = matchNode.matchDate;
-
-		}
-
-		else {
-
-			if (leftChild != null) {
-				leftChild.findAndUpdateMatchWinner(matchNode);
-			}
-
-			if (rightChild != null) {
-				rightChild.findAndUpdateMatchWinner(matchNode);
-			}
-		}
-	}
-
-
-	public void placeMatchInTree(Match match) {
-
-		if (nodeId == match.nodeId) {
-
-			//update pk - todo anything else?
-			db_id = match.db_id;
-			comp_1 = match.comp_1;
-			comp_2 = match.comp_2;
-			winner = match.winner;
-
-		}
-
-		else {
-
-			//keep searching for node with same nodeId
-
-			if (leftChild != null) {
-				leftChild.placeMatchInTree(match);
-			}
-
-			if (rightChild != null) {
-				rightChild.placeMatchInTree(match);
-			}
-		}
-
-	}
-
+//	void addEmptyChildren() {
+//
+//		if (level == 0) {
+//			return;
+//		}
+//
+//		leftChild = new Match(level - 1, true);
+//		leftChild.addEmptyChildren();
+//		rightChild = new Match(level - 1, false);
+//		rightChild.addEmptyChildren();
+//
+//	}
+
+
+//	static int nodeNumberCounter;
+
+
+//	public void addNodeNumbers() {
+//
+//		this.nodeId = nodeNumberCounter++;
+//
+//		if (leftChild != null) {
+//			leftChild.addNodeNumbers();
+//		}
+//
+//		if (rightChild != null) {
+//			rightChild.addNodeNumbers();
+//		}
+//
+//	}
+
+
+//
+//	//assign parent of each node to be the node id of the parent
+//	public void setParents() {
+//
+//		//find your children and set their parent Match object to you
+//
+//		if (leftChild != null) {
+//			leftChild.parent = this;
+//			leftChild.setParents();
+//		}
+//
+//		if (rightChild != null) {
+//			rightChild.parent = this;
+//			rightChild.setParents();
+//		}
+//
+//	}
+//
+
+//
+//	public void advanceWinningChildren() {
+//
+//		//If root, return
+//
+//		if (parent == null) {
+//			return;
+//		}
+//
+//		if (comp_1 != null && comp_2 != null && (comp_1.bye || winner == comp_2 )) {
+//
+//			//comp_2 is winner, advance comp_2 to parentMatch
+//
+//			winner = comp_2;
+//
+//			if (isLeftChild) {
+//				parent.comp_1 = winner;
+//			} else {
+//				parent.comp_2 = winner;
+//			}
+//
+//		}
+//
+//		if (comp_2 != null && comp_1 != null && (comp_2.bye || winner == comp_1)) {
+//			//comp_1 is winner, advance comp_1 to parent Match
+//			winner = comp_1;
+//
+//			if (isLeftChild) {
+//				parent.comp_1 = winner;
+//			} else {
+//				parent.comp_2 = winner;
+//			}
+//		}
+//
+//
+//		if (leftChild != null) {
+//			leftChild.advanceWinningChildren();
+//		}
+//
+//		if (rightChild != null) {
+//			rightChild.advanceWinningChildren();
+//		}
+//
+//
+//	}
+//
+//
+//
+//	public void addChildrenToList(ArrayList<Match> matches) {
+//
+//		if (leftChild != null) {
+//			matches.add(leftChild);
+//			leftChild.addChildrenToList(matches);
+//		}
+//
+//		if (rightChild != null) {
+//			matches.add(rightChild);
+//			rightChild.addChildrenToList(matches);
+//		}
+//
+//	}
+//
+//
+//
+//	void findAndUpdateMatchWinner(Match matchNode) {
+//
+//		if (nodeId == matchNode.nodeId) {
+//
+//			//set winner to whatever matchNode's winner is. TODO Anything else to update?
+//
+//			winner = matchNode.winner;
+//			matchDate = matchNode.matchDate;
+//
+//		}
+//
+//		else {
+//
+//			if (leftChild != null) {
+//				leftChild.findAndUpdateMatchWinner(matchNode);
+//			}
+//
+//			if (rightChild != null) {
+//				rightChild.findAndUpdateMatchWinner(matchNode);
+//			}
+//		}
+//	}
+//
+//
+//	public void placeMatchInTree(Match match) {
+//
+//		if (nodeId == match.nodeId) {
+//
+//			//update pk - todo anything else?
+//			db_id = match.db_id;
+//			comp_1 = match.comp_1;
+//			comp_2 = match.comp_2;
+//			winner = match.winner;
+//
+//		}
+//
+//		else {
+//
+//			//keep searching for node with same nodeId
+//
+//			if (leftChild != null) {
+//				leftChild.placeMatchInTree(match);
+//			}
+//
+//			if (rightChild != null) {
+//				rightChild.placeMatchInTree(match);
+//			}
+//		}
+//
+//	}
+//
 	@Override
 	public String toString() {
 		return "Match{" +
@@ -235,25 +224,21 @@ public class Match implements Parcelable {
 				", comp_1=" + comp_1 +
 				", comp_2=" + comp_2 +
 				", winner=" + winner +
-				", level=" + level +
 				", matchDate=" + matchDate +
-				", leftChild=" + leftChild +
-				", rightChild=" + rightChild +
-				//", parentId=" + parent.nodeId +
 				'}';
 	}
-
-
-	//TODO Verify this.
-
+//
+//
+//	//TODO Verify this.
+//
 	protected Match(Parcel in) {
 		comp_1 = in.readParcelable(Competitor.class.getClassLoader());
 		comp_2 = in.readParcelable(Competitor.class.getClassLoader());
 		winner = in.readParcelable(Competitor.class.getClassLoader());
-		level = in.readInt();
-		leftChild = in.readParcelable(Match.class.getClassLoader());
-		rightChild = in.readParcelable(Match.class.getClassLoader());
-		parent= in.readParcelable(Match.class.getClassLoader());
+//		level = in.readInt();
+//		leftChild = in.readParcelable(Match.class.getClassLoader());
+//		rightChild = in.readParcelable(Match.class.getClassLoader());
+//		parent= in.readParcelable(Match.class.getClassLoader());
 		nodeId = in.readInt();
 	}
 
@@ -280,10 +265,6 @@ public class Match implements Parcelable {
 		parcel.writeParcelable(comp_1, i);
 		parcel.writeParcelable(comp_2, i);
 		parcel.writeParcelable(winner, i);
-		parcel.writeInt(level);
-		parcel.writeParcelable(leftChild, i);
-		parcel.writeParcelable(rightChild, i);
-//		parcel.writeParcelable(parent, i);
 		parcel.writeInt(nodeId);
 	}
 
@@ -325,7 +306,7 @@ public class Match implements Parcelable {
 		}
 
 		//	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
-		values.put(Database.LEVEL, level);
+//		values.put(Database.LEVEL, level);
 
 		//			Date matchDate;
 		if (matchDate != null)  {

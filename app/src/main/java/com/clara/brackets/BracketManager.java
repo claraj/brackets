@@ -21,9 +21,9 @@ public class BracketManager {
 	private static final String ROOT_DB_ID = "root node match ID";
 	private Database database;
 
-	Bracket mBracket;
+	//Bracket mBracket;
 
-	private ArrayList<Competitor> mCompetitors;
+	//private ArrayList<Competitor> mCompetitors;
 
 
 	private Context context;
@@ -35,67 +35,71 @@ public class BracketManager {
 
 
 	void saveCompetitors(ArrayList<Competitor> competitors) {
-		mCompetitors = competitors;
+//		mCompetitors = competitors;
 		database.saveNewCompetitors(competitors);
 		Log.d(TAG, "Competitors saved with primary key values:" + competitors);
 	}
 
 
-	public void getCompetitorsFromDB() {
-		mCompetitors = database.readCompetitors();
+	public ArrayList<Competitor> getCompetitorsFromDB() {
+		return database.readCompetitors();
 	}
 
 
-	public void setCompetitors(ArrayList<Competitor> competitors) {
-		this.mCompetitors = competitors;
-	}
+//	public void setCompetitors(ArrayList<Competitor> competitors) {
+//		this.mCompetitors = competitors;
+//	}
 
 
-	public Bracket createEmptyBracket() {
+	private Bracket createBracket(int levels) {
 
 		//list should have power of two elements. Make tree of appropriate height, set each match leaf to pairs of competitor.
 
-		int levels = getNumberOfLevels();
+		//int levels = getNumberOfLevels();
 		Bracket bracket = new Bracket(levels);
 
 		Log.d(TAG, "created Bracket tree ");
-		//bracket.logTree();
+		bracket.logTree();
 
-		mBracket = bracket;
+		//mBracket = bracket;
+		return bracket;
+	}
+
+	public Bracket createBracket(ArrayList<Competitor> competitors) {
+		int levels = getNumberOfLevels(competitors.size());
+		Bracket bracket = createBracket(levels);
+		addInitialCompetitors(bracket, competitors);
 		return bracket;
 	}
 
 
-	private int getNumberOfLevels() {
-		int competitors = mCompetitors.size();
-		int levels = (int) (Math.log(competitors) / Math.log(2)) ;
+	private int getNumberOfLevels(int competitors) {
+		int levels = (int) Math.ceil( Math.log(competitors) / Math.log(2) ) ;
 		Log.d(TAG, "Maths .... levels for size " + competitors + " is " + levels);
 		return levels;
 
 	}
 
-	void addInitialCompetitors(ArrayList<Competitor> competitors) {
+	void addInitialCompetitors(Bracket bracket, ArrayList<Competitor> competitors) {
 
-		mCompetitors = competitors;
+		 Collections.shuffle(competitors);
 
-		 Collections.shuffle(mCompetitors);
-
-		 padCompetitorList();   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
+		 padCompetitorList(competitors);   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
 		 //Log.d(TAG, "levels of tree needed = " + levels);
 
-		 saveCompetitors(mCompetitors);
+		 saveCompetitors(competitors);
 
-		 mBracket.addMatchesAsLeaves(mCompetitors);
+		 bracket.addMatchesAsLeaves(competitors);
 
 		Log.d(TAG, "Added competitors to Bracket tree ");
 		//bracket.logTree();
 
-		mBracket.advanceWinners();   //advances byes and winners. Here, should just have the opponents of byes advanced.
+		bracket.advanceWinners();   //advances byes and winners. Here, should just have the opponents of byes advanced.
 
 		Log.d(TAG, "Advanced byes (competitors without an opponent) for the first round ");
 		//bracket.logTree();
 
-		saveNewMatchesToDB();
+		saveNewMatchesToDB(bracket);
 
 
 	}
@@ -105,26 +109,25 @@ public class BracketManager {
 
 		ArrayList<Match> oneMatch = new ArrayList<>();
 		oneMatch.add(match);
-
 		database.updateBracketMatches(oneMatch);
 
 	}
 
 
-	public void saveAllMatchesToDB() {
+	public void saveAllMatchesToDB(Bracket bracket) {
 
-		ArrayList<Match> allMatches = mBracket.getListOfMatches();
+		ArrayList<Match> allMatches = bracket.getListOfMatches();
 
 		Log.d(TAG, "All matches to be saved to DB");
 		database.updateBracketMatches(allMatches);
 	}
 
 
-	public void saveNewMatchesToDB() {
+	public void saveNewMatchesToDB(Bracket bracket) {
 
 		// does not save child-to-parent links, only parent-to-child
 
-		ArrayList<Match> allMatches = mBracket.getListOfMatches();
+		ArrayList<Match> allMatches = bracket.getListOfMatches();
 
 		for (Match m : allMatches){
 			database.saveMatchCreateID(m);
@@ -139,10 +142,12 @@ public class BracketManager {
 
 	public Bracket createBracketFromDB() {
 
-		getCompetitorsFromDB();
+		ArrayList<Competitor> competitors = getCompetitorsFromDB();
+
+		int levels = getNumberOfLevels(competitors.size());
 
 		//create blank bracket from competitors. Don't add leaves
-		Bracket bracket = createEmptyBracket();
+		Bracket bracket = createBracket(levels);
 
 		//read Match info from DB
 		ArrayList<Match> matches = database.getAllMatchesForBracket();
@@ -150,7 +155,7 @@ public class BracketManager {
 		//place matches into bracket
 
 		for (Match match : matches) {
-			placeMatchIntoBracket(match);
+			bracket.placeMatch(match);
 		}
 
 		bracket.setParents();
@@ -159,54 +164,36 @@ public class BracketManager {
 	}
 
 
-	private void placeMatchIntoBracket(Match match) {
-		mBracket.placeMatch(match);
+//	private void placeMatchIntoBracket(BracjMatch match) {
+//		mBracket.placeMatch(match);
+//
+//	}
 
-	}
 
-
-	private int padCompetitorList() {
+	private void padCompetitorList(ArrayList<Competitor> competitors) {
 
 		//is length power of 2?
 
-		int len =  mCompetitors.size();
+		int len =  competitors.size();
 
-		// Start with 1 and multiply by 2 until get value larger than size of list.
-		// Keep count of how many multiplications, which equals the next largest power of 2 than the size.
+		int levels = getNumberOfLevels(competitors.size());
 
-		int test = 1;
+		int totalStart = (int) Math.pow(2, levels);
 
-		int power = 0;
-
-		while (true) {
-			if (test == len) {
-				//a power of two
-				Log.d(TAG, "The length of the list is a power of two");
-				break;
-			}
-
-			if (test >= len) {
-				break;
-			}
-
-			test *= 2;
-			power++;
-		}
-
-		int padItems = test - mCompetitors.size();
+		int padItems = totalStart - len;
 
 		int insertPosition = 0;
 
 		for (int x = 0 ; x < padItems ; x++) {
 
 			//bye competitors should be spaced two apart, so the first round doesn't have two Byes playing each other.
-			mCompetitors.add(insertPosition, new Competitor(true));
+			competitors.add(insertPosition, new Competitor(true));
 			insertPosition+=2;
 		}
 
-		Log.d(TAG, "After padding, the list of competitors is " + mCompetitors.toString());
+		Log.d(TAG, "After padding, the list of competitors is " + competitors.toString());
 
-		return power;
+		//return competitors;
 
 	}
 

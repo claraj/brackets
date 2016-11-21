@@ -234,7 +234,7 @@ public class Database {
 			}
 
 
-			match.level = c.getInt(6);
+			//match.level = c.getInt(6);
 			match.nodeId = c.getInt(7);
 			match.matchDate = new Date(c.getLong(8));
 

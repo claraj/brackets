@@ -18,9 +18,10 @@ import java.util.ArrayList;
 public class Bracket implements Parcelable {
 	private static final String TAG = "BRACKET TREE";
 
-	//A tree of matches.
+	//A tree of BracketNodes.
 
-	private Match root;   //points to the a left child and a right child Match, which in turn, point to their child Match objects
+	protected static int nodeNumberCounter;
+	private BracketNode root;   //points to the a left child and a right child BracketNode, which in turn, point to their child BracketNode objects
 
 	private int levels;
 
@@ -34,13 +35,19 @@ public class Bracket implements Parcelable {
 
 		this.levels = levels;
 
-		root = new Match(levels-1, false);   	// Create the root node. for a 4-level tree, this is 3. Second argument isLeftChild.
+		root = new BracketNode(levels-1, false);   	// Create the root node. for a 4-level tree, this is 3. Second argument isLeftChild.
 		root.addEmptyChildren();		// Add empty children. This method will recurse through the tree, adding children
-		Match.nodeNumberCounter = 0;    // Initialize a static counter to number the nodes, from 0.
+		nodeNumberCounter = 0;    // Initialize a counter to number the nodes, from 0.
 		root.addNodeNumbers();			// Add number to the root, then this method will recurse through the nodes adding an ID number to each node
 		root.setParents();				// Recurse through the tree and create a reference to each node's parent node
 
 	}
+
+
+	public Bracket(ArrayList<Competitor> competitors) {
+
+	}
+
 
 	public void setParents() {
 		root.setParents();
@@ -55,7 +62,7 @@ public class Bracket implements Parcelable {
 	}
 
 
-	//Traverse the tree. If a Match (node) is at the desired level, add it to a list.
+	//Traverse the tree. If a BracketNode is at the desired level, add it's match it to a list.
 	public ArrayList<Match> allMatchesAtLevel(int level) {
 
 		ArrayList<Match> matches = new ArrayList<>();
@@ -65,14 +72,14 @@ public class Bracket implements Parcelable {
 	}
 
 	//Companion method to the above. Checks a node for being at a particular level, then calls this method on any non-null children.
-	public void addLevelMatchToResults(int level, Match node, ArrayList<Match> matchesList) {
+	public void addLevelMatchToResults(int level, BracketNode node, ArrayList<Match> matchesList) {
 
 		if (node == null) {
 			return;
 		}
 
 		if (node.level == level) {
-			matchesList.add(node);
+			matchesList.add(node.match);
 		}
 
 		else {
@@ -100,7 +107,7 @@ public class Bracket implements Parcelable {
 
 		ArrayList<Match> matches = new ArrayList<>();
 
-		matches.add(root);
+		matches.add(root.match);
 
 		root.addChildrenToList(matches);
 
@@ -109,11 +116,12 @@ public class Bracket implements Parcelable {
 
 	}
 
+	/*
 	Bracket(ArrayList<Match> matches) {
 		//TODO re-create tree by doing reverse of method above.
 
 	}
-
+	*/
 
 	//toString isn't going to work very well here.
 	// These two methods log all of the tree's nodes to the console.
@@ -121,7 +129,7 @@ public class Bracket implements Parcelable {
 		print(root);
 	}
 
-	void print(Match node) {
+	void print(BracketNode node) {
 
 		Log.d(TAG, node.toString());
 
@@ -150,10 +158,10 @@ public class Bracket implements Parcelable {
 
 
 
-	public void updateMatchWinnerAndDate(Match match) {
+	public void updateMatch(Match match) {
 
 		//find this match in the tree, save new winner
-		root.findAndUpdateMatchWinner(match);
+		root.findAndUpdateMatch(match);
 
 	}
 

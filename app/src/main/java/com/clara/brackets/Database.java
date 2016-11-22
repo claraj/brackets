@@ -247,8 +247,8 @@ public class Database {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 
-			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    ///this method only run when db upgraded.
-			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
+//			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    ///this method only run when db upgraded.
+//			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
 
 			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT , %s INTEGER )";  //todo check SQL
 			String createCompetitorsSQL = String.format(createCompetitorsBase, COMPETITORS_TABLE, COMP_ID, COMPETITOR_NAME, COMP_IS_BYE);
@@ -266,7 +266,7 @@ public class Database {
 			Log.d(SQL_TAG, createCompetitorsSQL);
 			db.execSQL(createCompetitorsSQL);
 
-			Log.d(SQL_TAG, createMatchesBase);
+			Log.d(SQL_TAG, createMatchesSQL);
 			db.execSQL(createMatchesSQL);
 
 		}

@@ -13,6 +13,8 @@ import java.util.Collections;
 /**
  * Created by clara on 11/19/16.
  * Can be used to create a Bracket, and can deal with database interaction and updates.
+ *
+ * TODO check for no competitors, or competitors.size() == 0 which causes errors.
  */
 
 public class BracketManager {
@@ -20,11 +22,9 @@ public class BracketManager {
 	private static final String TAG = "BRACKET MANAGER";
 
 	private Database database;
-	private Context context;
 
 	public BracketManager(Context context) {
 		database = new Database(context);
-		this.context = context;
 	}
 
 
@@ -51,6 +51,13 @@ public class BracketManager {
 	private Bracket createBracket(int levels) {
 
 		//list should have power of two elements. Make tree of appropriate height, set each match leaf to pairs of competitor.
+
+		if (levels <= 0) {
+			Log.e(TAG, "Number of levels must be 1 or more");
+			//todo deal with this scenario properly - this will just cause the app to crash when it tries to use the bracket
+			return null;
+		}
+
 		Bracket bracket = new Bracket(levels);
 		Log.d(TAG, "created Bracket tree ");
 		bracket.logTree();
@@ -59,6 +66,14 @@ public class BracketManager {
 
 	//Create bracket with enough levels to hold all of the competitors in the list given.
 	public Bracket createBracket(ArrayList<Competitor> competitors) {
+
+		if (competitors.size() <= 0) {
+			Log.e(TAG, "Number of competitors must be 1 or more");
+			//todo deal with this scenario properly - this will just cause the app to crash when it tries to use the bracket
+			return null;
+		}
+
+
 		int levels = getNumberOfLevels(competitors.size());
 		Bracket bracket = createBracket(levels);
 		Log.d(TAG, "Created Bracket");
@@ -165,7 +180,7 @@ public class BracketManager {
 
 		//is length 2-to-the-power-of-something? The number of competitors, to totally fill the bottom row, needs to be 2, 4, 8, 16, 32.... all 2 to the power of something.
 
-		int len =  competitors.size();
+		int len = competitors.size();
 
 		int levels = getNumberOfLevels(competitors.size());
 

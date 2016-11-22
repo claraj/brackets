@@ -193,8 +193,6 @@ public class BracketNode  {
 	}
 
 
-
-
 	@Override
 	public String toString() {
 		return "BracketNode{" +

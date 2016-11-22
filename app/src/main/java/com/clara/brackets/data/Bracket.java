@@ -166,9 +166,10 @@ public class Bracket implements Parcelable {
 	}
 
 
-	//TODO - parcelable implementation? There are cyclic references because children have references to their parents, and parents have references to their children
+	//TODO - parcelable implementation? There's no code in here but it seems to be working (??)
+	// There are cyclic references because children have references to their parents, and parents have references to their children
 	// When parceling, will need to break the child-to-parent links, and then re-create when un-parcelling.
-	// Also, it may work better to flatten the tree into an arraylist with getListOfMatches and then recreate it with the Bracket(ArrayList<Matches>) constructir.
+	// Or, it may work better to flatten the tree into an ArrayList with getListOfMatches and then recreate it with the Bracket(ArrayList<Matches>) constructor.
 
 	protected Bracket(Parcel in) {
 	}
@@ -192,9 +193,6 @@ public class Bracket implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {
-
-
-
 	}
 
 

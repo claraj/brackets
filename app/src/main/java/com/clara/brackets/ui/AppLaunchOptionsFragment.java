@@ -48,8 +48,8 @@ public class AppLaunchOptionsFragment extends Fragment implements View.OnClickLi
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_app_launch_options, container, false);
 
@@ -59,8 +59,35 @@ public class AppLaunchOptionsFragment extends Fragment implements View.OnClickLi
 		int visibility = (mInProgress) ? View.VISIBLE : View.INVISIBLE;
 		inProgressTV.setVisibility(visibility);
 
+		//Configure listeners
+		Button startNewButton = (Button) view.findViewById(R.id.start_new_tournament);
+		startNewButton.setOnClickListener(this);
+		Button startNewWithTestDataButton = (Button) view.findViewById(R.id.start_new_tournament_with_test_data);
+		startNewWithTestDataButton.setOnClickListener(this);
+		Button continueExistingButton = (Button) view.findViewById(R.id.continue_existing_tournament);
+		continueExistingButton.setOnClickListener(this);
+
 		return view;
 
+	}
+
+
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if (context instanceof OnUserSelectionListener) {
+			mListener = (OnUserSelectionListener) context;
+		} else {
+			throw new RuntimeException(context.toString()
+					+ " must implement OnUserSelectionListener");
+		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mListener = null;
 	}
 
 	@Override
@@ -84,25 +111,6 @@ public class AppLaunchOptionsFragment extends Fragment implements View.OnClickLi
 			}
 		}
 
-
-	}
-
-
-		@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		if (context instanceof OnUserSelectionListener) {
-			mListener = (OnUserSelectionListener) context;
-		} else {
-			throw new RuntimeException(context.toString()
-					+ " must implement OnUserSelectionListener");
-		}
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		mListener = null;
 	}
 
 	/**

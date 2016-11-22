@@ -62,7 +62,7 @@ public class Match implements Parcelable {
 		if (comp_2 != null) {
 			values.put(Database.COMP_2_ID, comp_2.id);
 		} else {
-			values.put(Database.COMP_2_ID, -1);   //no competitor
+			values.put(Database.COMP_2_ID, -1);   //-1 to indicate no competitor
 		}
 
 
@@ -70,10 +70,11 @@ public class Match implements Parcelable {
 		if (winner != null) {
 			values.put(Database.WINNER_ID, winner.id);
 		} else {
-			values.put(Database.WINNER_ID, -1);   //no winner yet
+			values.put(Database.WINNER_ID, -1);   //-1 to indicate no winner yet
 		}
 
 
+		//match date, as long timestamp
 		if (matchDate != null)  {
 			values.put(Database.MATCH_DATE, matchDate.getTime());
 		} else {

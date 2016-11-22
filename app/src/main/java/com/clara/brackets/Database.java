@@ -195,8 +195,6 @@ public class Database {
 				match.comp_2 = getCompetitorForId(comp_2_id);
 			}
 
-			//ignore col 4, is bye
-
 			int winner_id = c.getInt(3);
 			if (winner_id != -1) {
 				match.winner = getCompetitorForId(winner_id);
@@ -214,6 +212,7 @@ public class Database {
 
 		}
 
+		Log.d(TAG, "All matches from db: " + matches);
 		c.close();
 
 		return matches;

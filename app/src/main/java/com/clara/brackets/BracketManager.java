@@ -64,7 +64,9 @@ public class BracketManager {
 		Log.d(TAG, "Created Bracket");
 
 		addInitialCompetitors(bracket, competitors);
+
 		Log.d(TAG, "Padded competitor list" + competitors);
+
 		bracket.logTree();
 
 		bracket.advanceWinners();
@@ -73,7 +75,7 @@ public class BracketManager {
 
 
 		saveNewMatchesToDB(bracket);    //saves new matches created by advancing byes
-		saveCompetitors(competitors);   //saves the padded list including byes
+
 
 		return bracket;
 	}
@@ -86,7 +88,9 @@ public class BracketManager {
 		 padCompetitorList(competitors);   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
 		 //Log.d(TAG, "levels of tree needed = " + levels);
 
-		 bracket.addMatchesAsLeaves(competitors);
+		saveCompetitors(competitors);   //saves the padded list including byes
+
+		bracket.addMatchesAsLeaves(competitors);
 
 	}
 

@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements
 
 		Log.d(TAG, "Competitors to be saved: " + competitors);
 
-		//manager.setCompetitors();
 		Bracket bracket = manager.createBracket(competitors);  //manager keeps a reference to the Bracket
 
 		enterResultsFragment = EnterResultsFragment.newInstance(bracket);

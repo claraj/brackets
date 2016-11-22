@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tournament_in_progress"
+        android:id="@+id/tournament_in_progress_indicator_tv"/>
+
+    <Button
+        android:text="@string/start_new_tournament_deletes_tournament_in_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_new_tournament" />
+
+    <Button
+        android:text="@string/continue_existing_tournament"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/continue_existing_tournament" />
+
+    <Button
+        android:text="@string/start_tournament_with_test_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/start_new_tournament_with_test_data" />
+
+</LinearLayout>

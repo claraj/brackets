@@ -138,7 +138,6 @@ public class BracketManager {
 	public Bracket createBracketFromDB() {
 
 		//Only needed to get size of competitor list
-//		ArrayList<Competitor> competitors = getCompetitorsFromDB();
 		int count = database.competitorCount();
 		int levels = getNumberOfLevels(count);
 
@@ -162,15 +161,9 @@ public class BracketManager {
 	}
 
 
-//	private void placeMatchIntoBracket(BracjMatch match) {
-//		mBracket.placeMatch(match);
-//
-//	}
-
-
 	private void padCompetitorList(ArrayList<Competitor> competitors) {
 
-		//is length power of 2?
+		//is length 2-to-the-power-of-something? The number of competitors, to totally fill the bottom row, needs to be 2, 4, 8, 16, 32.... all 2 to the power of something.
 
 		int len =  competitors.size();
 
@@ -184,17 +177,20 @@ public class BracketManager {
 
 		for (int x = 0 ; x < padItems ; x++) {
 
-			//bye competitors should be spaced two apart, so the first round doesn't have two Byes playing each other.
+			//bye competitors should be spaced two apart, so the first round doesn't have two byes playing each other.
 			competitors.add(insertPosition, new Competitor(true));
 			insertPosition+=2;
 		}
 
 		Log.d(TAG, "After padding, the list of competitors is " + competitors.toString());
 
-		//return competitors;
 
 	}
 
+
+	public void clearDatabase() {
+		database.clearAll();
+	}
 
 
 	public void closeDB() {

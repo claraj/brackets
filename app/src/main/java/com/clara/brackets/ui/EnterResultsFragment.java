@@ -16,14 +16,6 @@ import com.clara.brackets.data.Match;
 import java.util.Date;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EnterResultsFragment.OnMatchUpdated} interface
- * to handle interaction events.
- * Use the {@link EnterResultsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class EnterResultsFragment extends Fragment  implements EnterMatchResultDialogFragment.MatchResultDialogFragmentListener {
 
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -44,7 +36,7 @@ public class EnterResultsFragment extends Fragment  implements EnterMatchResultD
 //	 * Use this factory method to create a new instance of
 //	 * this fragment using the provided parameters.
 //	 *
-//	 * @param param1 Parameter 1.
+//	 * @param bracket the Bracket to display.
 //	 * @return A new instance of fragment EnterResultsFragment.
 //	 */
 
@@ -61,6 +53,8 @@ public class EnterResultsFragment extends Fragment  implements EnterMatchResultD
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
 			mBracket = getArguments().getParcelable(ARG_BRACKET);
+			Log.d(TAG, "when extracted from fragment arguments, Bracket is as follows:");
+			mBracket.logTree();
 		}
 	}
 
@@ -76,7 +70,6 @@ public class EnterResultsFragment extends Fragment  implements EnterMatchResultD
 		//The pager is for swiping between different levels of the bracket.
 		ViewPager pager = (ViewPager) view.findViewById(R.id.matches_pager);
 		pagerAdapter = new MatchesPagerAdapter(getChildFragmentManager(), mBracket);
-		//pagerAdapter.setBracket(mBracket);
 		pager.setAdapter(pagerAdapter);
 
 		return view;

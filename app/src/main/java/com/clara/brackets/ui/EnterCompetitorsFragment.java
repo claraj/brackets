@@ -20,14 +20,6 @@ import com.clara.brackets.data.Competitor;
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EnterCompetitorsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class EnterCompetitorsFragment extends Fragment implements View.OnClickListener {
 
 	private static final String TAG = "ENTER COMPETITORS FRAG";
@@ -100,9 +92,9 @@ public class EnterCompetitorsFragment extends Fragment implements View.OnClickLi
 		mListView.setAdapter(mAdapter);
 
 		if (mCompetitors.size() == 0) {										//onCreate runs first, and initializes mCompetitors.
-			mNumberCompetitors.setText("(No competitors)");
+			mNumberCompetitors.setText(R.string.no_competitors);
 		} else {
-			mNumberCompetitors.setText(" (" + mCompetitors.size() + " competitor(s) )");
+			mNumberCompetitors.setText(" (" + mCompetitors.size() + R.string.competitors);
 		}
 
 		return view;

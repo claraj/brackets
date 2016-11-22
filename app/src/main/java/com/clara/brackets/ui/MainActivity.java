@@ -18,7 +18,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
 		EnterCompetitorsFragment.OnEnterCompetitorFragmentInteractionListener,
-		EnterResultsFragment.OnMatchUpdated
+		EnterResultsFragment.OnMatchUpdated,
+		AppLaunchOptionsFragment.OnUserSelectionListener
 {
 
 	private static final String TOURNAMENT_IN_PROGRESS = "is tournament in progress?";
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements
 	EnterCompetitorsFragment enterCompetitorsFragment;
 	EnterResultsFragment enterResultsFragment;
 
-	BracketManager manager;
+	BracketManager mManager;
 
 	private final String TAG = "MAIN ACTIVITY";
 
@@ -39,30 +40,11 @@ public class MainActivity extends AppCompatActivity implements
 
 		//Otherwise, show the EnterCompetitorsFragment
 
-		manager = new BracketManager(this);
+		mManager = new BracketManager(this);
 
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-		if (isCompetitionInProgress()) {
-
-			Log.d(TAG, "Competition is in progress. Loading data from DB and starting EnterResultsFragment");
-
-			Bracket bracket = manager.createBracketFromDB();
-
-			enterResultsFragment = EnterResultsFragment.newInstance(bracket);
-			transaction.add(R.id.content, enterResultsFragment);
-
-
-		} else {
-
-			Log.d(TAG, "No saved competitors, starting EnterCompetitorsFragment");
-
-			//create new competitors. For testing, create some mock competitors. Replace with null for real app.
-			enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(6));
-			transaction.add(R.id.content, enterCompetitorsFragment);
-
-		}
-
+		AppLaunchOptionsFragment appLaunchOptionsFragment = AppLaunchOptionsFragment.newInstance(isCompetitionInProgress());
+		transaction.add(R.id.content, appLaunchOptionsFragment);
 		transaction.commit();
 
 	}
@@ -93,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
 
 		Log.d(TAG, "Competitors to be saved: " + competitors);
 
-		Bracket bracket = manager.createBracket(competitors);  //manager keeps a reference to the Bracket
+		Bracket bracket = mManager.createBracket(competitors);  //manager keeps a reference to the Bracket
 
 		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
 
@@ -113,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements
 	@Override
 	public void onPause() {
 		super.onPause();
-		manager.closeDB();
+		mManager.closeDB();
 	}
 
 
@@ -121,6 +103,60 @@ public class MainActivity extends AppCompatActivity implements
 
 	@Override
 	public void matchUpdated(Match match) {
-		manager.saveUpdatedMatch(match);
+		mManager.saveUpdatedMatch(match);
+	}
+
+
+	//Callbacks from AppLaunchOptionsFragment
+
+	@Override
+	public void startNewTournament() {
+
+
+		Log.d(TAG, "Deleting existing data. Start new tournament starting EnterCompetitorsFragment");
+
+		//todo - a warning before deleting!
+		mManager.clearDatabase();
+
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+		enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(null);
+		transaction.replace(R.id.content, enterCompetitorsFragment);
+
+		transaction.commit();
+
+
+	}
+
+	@Override
+	public void startNewTournamentWithTestData() {
+
+		Log.d(TAG, "Deleting existing data. Start new tournament starting EnterCompetitorsFragment");
+
+		//todo - a warning before deleting!
+		//wipe DB
+		mManager.clearDatabase();
+
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+		//create new competitors. For testing, create some mock competitors. Replace with null for real app.
+		enterCompetitorsFragment = EnterCompetitorsFragment.newInstance(mockCompetitors(14));
+		transaction.replace(R.id.content, enterCompetitorsFragment);
+
+		transaction.commit();
+
+	}
+
+	@Override
+	public void continueExistingTournament() {
+
+		Log.d(TAG, "Tournament is in progress. Loading data from DB and starting EnterResultsFragment");
+
+		Bracket bracket = mManager.createBracketFromDB();
+
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		enterResultsFragment = EnterResultsFragment.newInstance(bracket);
+		transaction.replace(R.id.content, enterResultsFragment);
+		transaction.commit();
 	}
 }

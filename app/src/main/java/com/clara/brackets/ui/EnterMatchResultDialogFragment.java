@@ -12,7 +12,7 @@ import com.clara.brackets.data.Match;
 
 
 /**
- * Created by admin on 11/19/16.
+ * Created by clara on 11/19/16.
  */
 
 public class EnterMatchResultDialogFragment extends DialogFragment {

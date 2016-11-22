@@ -42,38 +42,22 @@ public class Database {
 	/*
 
 	Competitor comp_1;  (save id)
-			//and if is bye
 	Competitor comp_2;  (save id)
-			and if is bye
-
 	Competitor winner;  (save id)
 
-	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
-
 	Date matchDate;
-
-	Match leftChild;
-	Match rightChild;
-
-	Match parent;
-
-	boolean isLeftChild;
 	int nodeId;
 
 */
 
 	public static final String MATCHES_TABLE = "matches";
+
 	public static final String MATCH_ID = "_id";   //primary key
 
 	public	static final String COMP_1_ID = "competitor_1_id";
-	//public static final String COMP_1_IS_BYE = "competitor_1_is_bye";
-
 	public static final String COMP_2_ID = "competitor_2_id";
-	//public 	static final String COMP_2_IS_BYE = "competitor_2_is_bye";
-
 	public	static final String WINNER_ID = "winner_id";
 
-	public static final String LEVEL = "tree_level";
 	public static final String NODE_ID = "node_id";      //corresponds to node_id in Bracket tree
 	public static final String MATCH_DATE = "match_date";
 
@@ -87,6 +71,7 @@ public class Database {
 	void close() {
 		helper.close(); //Closes the database - important!
 	}
+
 
 	/** Insert competitors, read competitors */
 
@@ -245,6 +230,10 @@ public class Database {
 
 	}
 
+	public void clearAll() {
+		db.delete(MATCHES_TABLE, null, null);
+		db.delete(COMPETITORS_TABLE, null, null);
+	}
 
 
 	private class SQLHelper extends SQLiteOpenHelper {
@@ -258,7 +247,7 @@ public class Database {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 
-			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    //not for real app :)
+			db.execSQL("DROP TABLE IF EXISTS " + COMPETITORS_TABLE);    ///this method only run when db upgraded.
 			db.execSQL("DROP TABLE IF EXISTS " + MATCHES_TABLE);
 
 			String createCompetitorsBase = "CREATE TABLE %s ( %s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT , %s INTEGER )";  //todo check SQL

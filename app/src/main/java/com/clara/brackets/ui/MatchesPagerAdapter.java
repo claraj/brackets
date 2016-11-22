@@ -11,7 +11,7 @@ import com.clara.brackets.data.Match;
 import java.util.ArrayList;
 
 /**
- * Created by me on 11/19/16. Adapter for pager view.
+ * Created by clara on 11/19/16. Adapter for pager view.
  *
  * todo recycling views (?)
  */

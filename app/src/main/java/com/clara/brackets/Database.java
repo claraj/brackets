@@ -95,6 +95,16 @@ public class Database {
 
 	/** Insert competitors, read competitors */
 
+	public int competitorCount() {
+
+		Cursor cursor = db.rawQuery("SELECT COUNT (*) FROM " + COMPETITORS_TABLE, null);
+		cursor.moveToFirst();
+		int count = cursor.getInt(0);
+		Log.d(TAG, "Number of competitors = " + count);
+		return count;
+
+	}
+
 	public void saveNewCompetitors(ArrayList<Competitor> competitors) {
 
 		Log.d(TAG, "About to save this to DB: " + competitors);
@@ -236,8 +246,12 @@ public class Database {
 
 			//match.level = c.getInt(6);
 			match.nodeId = c.getInt(7);
-			match.matchDate = new Date(c.getLong(8));
 
+			long matchDate = c.getLong(8);
+			//Create date, if one available
+			if (matchDate != Match.NO_DATE) {
+				match.matchDate = new Date(c.getLong(8));
+			}
 
 			matches.add(match);
 

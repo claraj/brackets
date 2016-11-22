@@ -39,27 +39,27 @@ public class Bracket implements Parcelable {
 		root.addEmptyChildren();		// Add empty children. This method will recurse through the tree, adding children
 		nodeNumberCounter = 0;    // Initialize a counter to number the nodes, from 0.
 		root.addNodeNumbers();			// Add number to the root, then this method will recurse through the nodes adding an ID number to each node
-		root.setParents();				// Recurse through the tree and create a reference to each node's parent node
+		root.linkParent();				// Recurse through the tree and create a reference to each node's parent node
 
 	}
 
 
-	public Bracket(ArrayList<Competitor> competitors) {
+//	public Bracket(ArrayList<Competitor> competitors) {
+//
+//	}
 
-	}
 
-
-	public void setParents() {
-		root.setParents();
+	public void linkParents() {
+		root.linkParent();
 	}
 
 	public int getLevels() {
 		return levels;
 	}
 
-	public long getRootDB_ID() {
-		return root.db_id;
-	}
+//	public long getRootDB_ID() {
+//		return root.db_id;
+//	}
 
 
 	//Traverse the tree. If a BracketNode is at the desired level, add it's match it to a list.
@@ -146,7 +146,7 @@ public class Bracket implements Parcelable {
 
 	public void placeMatch(Match match) {
 
-		root.placeMatchInTree(match);
+		root.findAndUpdateMatch(match);
 
 	}
 

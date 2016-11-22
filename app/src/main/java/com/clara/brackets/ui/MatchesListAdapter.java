@@ -52,8 +52,8 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 
 		if (match == null) { return convertView; }
 
-
-		if (match.matchDate != null)  {
+		//if winner and match date set
+		if (match.matchDate != null && match.winner != null)  {
 			String dateString = dateFormat.format(match.matchDate);
 			dateTV.setText(dateString);
 		}
@@ -94,17 +94,18 @@ public class MatchesListAdapter extends ArrayAdapter<Match> {
 		}
 
 
-		//Deal with byes - competitor automatically wins and progresses to next level
+		//TODO code works but shouldn't winner be set so be picked up by code above?
+		// Deal with byes - competitor automatically wins and progresses to next level
 
-		if (match.comp_1 != null && match.comp_1.bye) {
-			competitor2.setTypeface(null, Typeface.BOLD);
-			competitor2.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
-		}
-
-		if (match.comp_2 != null && match.comp_2.bye) {
-			competitor1.setTypeface(null, Typeface.BOLD);
-			competitor1.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
-		}
+//		if (match.comp_1 != null && match.comp_1.bye) {
+//			competitor2.setTypeface(null, Typeface.BOLD);
+//			competitor2.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
+//		}
+//
+//		if (match.comp_2 != null && match.comp_2.bye) {
+//			competitor1.setTypeface(null, Typeface.BOLD);
+//			competitor1.setTextColor(ContextCompat.getColor(getContext(), R.color.winner_text));
+//		}
 
 
 		return convertView;

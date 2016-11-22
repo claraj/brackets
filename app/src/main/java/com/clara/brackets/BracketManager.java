@@ -12,20 +12,14 @@ import java.util.Collections;
 
 /**
  * Created by clara on 11/19/16.
- * Creates bracket, deals with database interaction and updates.
+ * Can be used to create a Bracket, and can deal with database interaction and updates.
  */
 
 public class BracketManager {
 
 	private static final String TAG = "BRACKET MANAGER";
-	private static final String ROOT_DB_ID = "root node match ID";
+
 	private Database database;
-
-	//Bracket mBracket;
-
-	//private ArrayList<Competitor> mCompetitors;
-
-
 	private Context context;
 
 	public BracketManager(Context context) {
@@ -34,7 +28,7 @@ public class BracketManager {
 	}
 
 
-	void saveCompetitors(ArrayList<Competitor> competitors) {
+	private void saveCompetitors(ArrayList<Competitor> competitors) {
 //		mCompetitors = competitors;
 		database.saveNewCompetitors(competitors);
 		Log.d(TAG, "Competitors saved with primary key values:" + competitors);
@@ -42,7 +36,9 @@ public class BracketManager {
 
 
 	public ArrayList<Competitor> getCompetitorsFromDB() {
-		return database.readCompetitors();
+		ArrayList<Competitor> competitors = database.readCompetitors();
+		Log.d(TAG, "Competitors read from db: " + competitors);
+		return competitors;
 	}
 
 
@@ -51,56 +47,53 @@ public class BracketManager {
 //	}
 
 
+	//Creates empty Bracket of designated number of levels
 	private Bracket createBracket(int levels) {
 
 		//list should have power of two elements. Make tree of appropriate height, set each match leaf to pairs of competitor.
-
-		//int levels = getNumberOfLevels();
 		Bracket bracket = new Bracket(levels);
-
 		Log.d(TAG, "created Bracket tree ");
 		bracket.logTree();
-
-		//mBracket = bracket;
 		return bracket;
 	}
 
+	//Create bracket with enough levels to hold all of the competitors in the list given.
 	public Bracket createBracket(ArrayList<Competitor> competitors) {
 		int levels = getNumberOfLevels(competitors.size());
 		Bracket bracket = createBracket(levels);
+		Log.d(TAG, "Created Bracket");
+
 		addInitialCompetitors(bracket, competitors);
+		Log.d(TAG, "Padded competitor list" + competitors);
+		bracket.logTree();
+
+		bracket.advanceWinners();
+		Log.d(TAG, "Advanced byes (competitors without an opponent) for the first round ");
+		bracket.logTree();
+
+
+		saveNewMatchesToDB(bracket);    //saves new matches created by advancing byes
+		saveCompetitors(competitors);   //saves the padded list including byes
+
 		return bracket;
 	}
 
 
-	private int getNumberOfLevels(int competitors) {
-		int levels = (int) Math.ceil( Math.log(competitors) / Math.log(2) ) ;
-		Log.d(TAG, "Maths .... levels for size " + competitors + " is " + levels);
-		return levels;
-
-	}
-
-	void addInitialCompetitors(Bracket bracket, ArrayList<Competitor> competitors) {
+	private void addInitialCompetitors(Bracket bracket, ArrayList<Competitor> competitors) {
 
 		 Collections.shuffle(competitors);
 
 		 padCompetitorList(competitors);   //The number of competitors should be a power of 2. Pad with bye competitors if needed.
 		 //Log.d(TAG, "levels of tree needed = " + levels);
 
-		 saveCompetitors(competitors);
-
 		 bracket.addMatchesAsLeaves(competitors);
 
-		Log.d(TAG, "Added competitors to Bracket tree ");
-		//bracket.logTree();
+	}
 
-		bracket.advanceWinners();   //advances byes and winners. Here, should just have the opponents of byes advanced.
-
-		Log.d(TAG, "Advanced byes (competitors without an opponent) for the first round ");
-		//bracket.logTree();
-
-		saveNewMatchesToDB(bracket);
-
+	private int getNumberOfLevels(int competitors) {
+		int levels = (int) Math.ceil( Math.log(competitors) / Math.log(2) ) ;
+		Log.d(TAG, "Maths .... levels for size " + competitors + " is " + levels);
+		return levels;
 
 	}
 
@@ -125,8 +118,6 @@ public class BracketManager {
 
 	public void saveNewMatchesToDB(Bracket bracket) {
 
-		// does not save child-to-parent links, only parent-to-child
-
 		ArrayList<Match> allMatches = bracket.getListOfMatches();
 
 		for (Match m : allMatches){
@@ -142,9 +133,10 @@ public class BracketManager {
 
 	public Bracket createBracketFromDB() {
 
-		ArrayList<Competitor> competitors = getCompetitorsFromDB();
-
-		int levels = getNumberOfLevels(competitors.size());
+		//Only needed to get size of competitor list
+//		ArrayList<Competitor> competitors = getCompetitorsFromDB();
+		int count = database.competitorCount();
+		int levels = getNumberOfLevels(count);
 
 		//create blank bracket from competitors. Don't add leaves
 		Bracket bracket = createBracket(levels);
@@ -152,13 +144,15 @@ public class BracketManager {
 		//read Match info from DB
 		ArrayList<Match> matches = database.getAllMatchesForBracket();
 
-		//place matches into bracket
+		Log.d(TAG, "matches from DB = " + matches);
 
+		//place matches into BracketNodes
 		for (Match match : matches) {
 			bracket.placeMatch(match);
 		}
 
-		bracket.setParents();
+		bracket.linkParents();
+		bracket.advanceWinners();
 		return bracket;
 
 	}

@@ -1,7 +1,6 @@
 Brackets generator for a tournament
 
 User can enter team names, and generate brackets for matchups.
-todo - integrate this with rest of app
 
 User will be prompted to enter winner of each matchup
 
@@ -10,8 +9,12 @@ Keeps track of winners of each bracket.
 
 *****************
 todo save to database; fetch from DB
+Draw each round correctly
+Test winner recorded correctly
 *****************
 
+
+//todo error - matches with no date are 0 and show as dec 31 1969
 
 
 todo test

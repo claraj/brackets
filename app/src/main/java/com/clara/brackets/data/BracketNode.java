@@ -1,12 +1,8 @@
 package com.clara.brackets.data;
 
-import android.content.ContentValues;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by clara on 11/19/16.
@@ -18,20 +14,21 @@ public class BracketNode  {
 
 	private static final String TAG = "BRACKET NODE";
 
-	public int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
+	int level;    // 0 is the lowest level of the tree. In a 4-level tree, the top level is 3.
 
-	public Match match;
+	Match match;
 
-	public BracketNode leftChild;
-	public BracketNode rightChild;
+	BracketNode leftChild;
+	BracketNode rightChild;
 
-	public BracketNode parent;
+	BracketNode parent;
 
-	public boolean isLeftChild;
+	boolean isLeftChild;
 
-	public int nodeId;    //numbers the nodes in this Bracket tree
+	int nodeId;    //numbers the nodes in this Bracket tree
 
-	public BracketNode(int level, boolean isLeftChild) {
+
+	BracketNode(int level, boolean isLeftChild) {
 		this.level = level;
 		this.isLeftChild = isLeftChild;
 		match = new Match();
@@ -71,20 +68,6 @@ public class BracketNode  {
 	}
 
 
-//	public void setMatchesAsLeaves(ArrayList<Competitor> competitors) {
-//
-//		if (level == 0) {
-//			match.comp_1 = competitors.remove(0);
-//			match.comp_2 = competitors.remove(0);
-//		}
-//
-//		else {
-//			leftChild.setMatchesAsLeaves(competitors);
-//			rightChild.setMatchesAsLeaves(competitors);
-//		}
-//
-//
-//	}
 
 	//assign parent of each node to be the node id of the parent
 	public void linkParent() {
@@ -113,10 +96,11 @@ public class BracketNode  {
 
 		Log.d(TAG, "Advance winning children for match " + match);
 
-		//If no
+		//If no parent, then nowhere to advance to
 		if (parent == null) {
 			Log.d(TAG, "This is the top of the tree " + match);
 		}
+
 
 		//Request children advance their winners
 		if (leftChild != null) {
@@ -130,36 +114,36 @@ public class BracketNode  {
 
 		//TODO test that match.comp1 and comp2 are not null
 
-		if (match.comp_2 != null && match.comp_1 != null){
+		if (match.comp_2 != null && match.comp_1 != null) {
 
-		//And then advance this node's winners
-		if (match.comp_1.bye) {
-			//comp 2 wins
-			match.winner = match.comp_2;
-		}
+			//Advance oppoenents of byes
+			if (match.comp_1.bye) {
+				//comp 2 wins
+				match.winner = match.comp_2;
+			}
 
-		if (match.comp_2.bye) {
-			//comp 1 wins
-			match.winner = match.comp_1;
-		}
+			if (match.comp_2.bye) {
+				//comp 1 wins
+				match.winner = match.comp_1;
+			}
 
-		if (match.winner != null) {
-			if (isLeftChild) {
-				parent.match.comp_1 = match.winner;    //Advance left child winner to comp_1 of parent
-			} else {
-				parent.match.comp_2 = match.winner;    //Advance right child winner to comp_2 of parent
+			//If there is a parent, then advance the winner to the parent
+			if (match.winner != null && parent != null) {
+				if (isLeftChild) {
+					parent.match.comp_1 = match.winner;    //Advance left child winner to comp_1 of parent
+				} else {
+					parent.match.comp_2 = match.winner;    //Advance right child winner to comp_2 of parent
+				}
+
 			}
 		}
-
-	}
 		Log.d(TAG, "Advanced winning children, now match is " + match);
 
-
 	}
 
 
 
-	public void addChildrenToList(ArrayList<Match> matches) {
+	void addChildrenToList(ArrayList<Match> matches) {
 
 		if (leftChild != null) {
 			matches.add(leftChild.match);
@@ -174,7 +158,7 @@ public class BracketNode  {
 	}
 
 
-	public void setCompetitorsAsLeaves(ArrayList<Competitor> competitors) {
+	void setCompetitorsAsLeaves(ArrayList<Competitor> competitors) {
 
 		if (level == 0) {
 			match.comp_1 = competitors.remove(0);
@@ -189,7 +173,7 @@ public class BracketNode  {
 
 
 
-	public void findAndUpdateMatch(Match updateMatch) {
+	void findAndUpdateMatch(Match updateMatch) {
 
 		//Find BracketNode by node_ID. Replace match with updateMatch.
 
@@ -209,29 +193,7 @@ public class BracketNode  {
 	}
 
 
-//	public void placeMatchInTree(Match matchToAdd) {
-//
-//		if (nodeId == match.nodeId) {
-//
-//			//update pk - todo anything else?
-//			match = matchToAdd;
-//
-//		}
-//
-//		else {
-//
-//			//keep searching for node with same nodeId
-//
-//			if (leftChild != null) {
-//				leftChild.placeMatchInTree(matchToAdd);
-//			}
-//
-//			if (rightChild != null) {
-//				rightChild.placeMatchInTree(matchToAdd);
-//			}
-//		}
-//
-//	}
+
 
 	@Override
 	public String toString() {
@@ -246,8 +208,6 @@ public class BracketNode  {
 				'}';
 	}
 
-
-	//TODO parcelable needed?
 
 }
 

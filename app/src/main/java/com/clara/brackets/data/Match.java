@@ -21,7 +21,7 @@ public class Match implements Parcelable {
 	private static final String TAG = "MATCH";
 	public static final int NO_DATE = -1;
 
-	public long db_id;   //primary key from the database (?)
+	public long db_id;   //primary key from the database
 
 	public Competitor comp_1;
 	public Competitor comp_2;
@@ -31,58 +31,9 @@ public class Match implements Parcelable {
 
 	public int nodeId;
 
-
 	public Match() {}  // used by DB
 
 
-	protected Match(Parcel in) {
-		db_id = in.readLong();
-		comp_1 = in.readParcelable(Competitor.class.getClassLoader());
-		comp_2 = in.readParcelable(Competitor.class.getClassLoader());
-		winner = in.readParcelable(Competitor.class.getClassLoader());
-		nodeId = in.readInt();
-	}
-
-	public static final Creator<Match> CREATOR = new Creator<Match>() {
-		@Override
-		public Match createFromParcel(Parcel in) {
-			return new Match(in);
-		}
-
-		@Override
-		public Match[] newArray(int size) {
-			return new Match[size];
-		}
-	};
-
-	//
-//	public void placeMatchInTree(Match match) {
-//
-//		if (nodeId == match.nodeId) {
-//
-//			//update pk - todo anything else?
-//			db_id = match.db_id;
-//			comp_1 = match.comp_1;
-//			comp_2 = match.comp_2;
-//			winner = match.winner;
-//
-//		}
-//
-//		else {
-//
-//			//keep searching for node with same nodeId
-//
-//			if (leftChild != null) {
-//				leftChild.placeMatchInTree(match);
-//			}
-//
-//			if (rightChild != null) {
-//				rightChild.placeMatchInTree(match);
-//			}
-//		}
-//
-//	}
-//
 	@Override
 	public String toString() {
 		return "Match{" +
@@ -94,12 +45,10 @@ public class Match implements Parcelable {
 				", matchDate=" + matchDate +
 				'}';
 	}
-//
-//
-//
 
+
+	//Convenience method for the database. Add all fields to ContentValues object
 	public void addValues(ContentValues values) {
-
 
 		//	Competitor comp_1,  save id, and if bye or not
 		if (comp_1 != null) {
@@ -108,12 +57,6 @@ public class Match implements Parcelable {
 			values.put(Database.COMP_1_ID, -1);   //no competitor
 		}
 
-		// 0 is false and 1 is true
-		if (comp_1 != null && comp_1.bye) {
-			values.put(Database.COMP_1_IS_BYE, 1);
-		} else {
-			values.put(Database.COMP_1_IS_BYE, 0);
-		}
 
 		//	Competitor comp_2,  save id, and if bye or not
 		if (comp_2 != null) {
@@ -122,11 +65,6 @@ public class Match implements Parcelable {
 			values.put(Database.COMP_2_ID, -1);   //no competitor
 		}
 
-		if (comp_2 != null && comp_2.bye) {
-			values.put(Database.COMP_2_IS_BYE, 1);
-		} else {
-			values.put(Database.COMP_2_IS_BYE, 0);     //byes still have id numbers.
-		}
 
 		// Competitor winner,  save id
 		if (winner != null) {
@@ -148,10 +86,33 @@ public class Match implements Parcelable {
 	}
 
 
+	/* Parcelable implementation */
+
+	protected Match(Parcel in) {
+		db_id = in.readLong();
+		comp_1 = in.readParcelable(Competitor.class.getClassLoader());
+		comp_2 = in.readParcelable(Competitor.class.getClassLoader());
+		winner = in.readParcelable(Competitor.class.getClassLoader());
+		nodeId = in.readInt();
+	}
+
+	public static final Creator<Match> CREATOR = new Creator<Match>() {
+		@Override
+		public Match createFromParcel(Parcel in) {
+			return new Match(in);
+		}
+
+		@Override
+		public Match[] newArray(int size) {
+			return new Match[size];
+		}
+	};
+
 	@Override
 	public int describeContents() {
 		return 0;
 	}
+
 
 	@Override
 	public void writeToParcel(Parcel parcel, int i) {

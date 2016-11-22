@@ -1,6 +1,6 @@
-# Brackets generator for a tournament
+# Brackets generator
 
-User can enter team names, and generate brackets for matchups.
+User can enter team names, and generate brackets for matchups in a tournament.
 
 User will be prompted to enter winner of each matchup
 
